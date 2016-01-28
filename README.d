@@ -1,4 +1,0 @@
-##AES
-
-#Automated Eassy Scoring
-
