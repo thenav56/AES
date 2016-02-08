@@ -1,7 +1,6 @@
 class Node(object):
-    def __init__(self):
-        self.count = 0
-        self.child = {}
+    count = 0
+    child = {}
 
 
 class Trie:
@@ -12,11 +11,12 @@ class Trie:
         self.root = self.InsertAgain(self.root, key, 0)
 
     def InsertAgain(self, node, key, pos):
+        if node is None:
+            node = Node()
         if(pos == len(key)):
             node.count += 1
             return node
-        if node.child.get(key[pos]) is None:
-            node.child[key[pos]] = Node()
+        node.child[key[pos]] = Node()
         node.child[key[pos]] = self.InsertAgain(node.child[key[pos]],
             key, pos+1)
         return node
@@ -31,27 +31,22 @@ class Trie:
             if(node.count > 0):
                 return True
             return False
-        if node.child.get(key[pos]) is None:
+        default = Node()
+        if node.child.get(key[pos], default) is None:
             return False
         return self.SearchAgain(node.child[key[pos]], key, pos+1)
 
 def main():
-    data = ['pramod', 'uttam', 'navin', 'prabesh', 'pramod']
+    data = ['pramod', 'uttam', 'navin', 'prabesh']
     newTrie = Trie()
     for x in range(len(data)):
         newTrie.Insert(list(data[x]))
-    print(newTrie.root.child.keys())
+    print newTrie.root.child.keys()
     nodep = newTrie.root.child['p']
-    noder= nodep.child['r']
-    nodea = noder.child['a']
-    nodem = nodea.child['m']
-    nodeo = nodem.child['o']
-    noded = nodeo.child['d']
-    print(noded.count)
-    print(nodea.child.keys())
-    print(newTrie.Search('pramod'))
-    print(newTrie.Search(list('pamod')))
-    print(newTrie.Search(list('saroj')))
+    print nodep.child.keys()
+    print newTrie.Search('pramod')
+    print newTrie.Search(list('pamod'))
+
 if __name__=="__main__":
     main()
 
