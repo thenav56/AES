@@ -22,21 +22,24 @@ class Trie:
         return node
 
     def Search(self, key):
+        if(self.Count(key) > 0):
+            return True
+        return False
+
+    def Count(self, key):
         return self.SearchAgain(self.root, key, 0)
 
     def SearchAgain(self, node, key, pos):
         if node is None:
-            return False
+            return 0
         if(pos == len(key)):
-            if(node.count > 0):
-                return True
-            return False
+            return node.count
         if node.child.get(key[pos]) is None:
-            return False
+            return 0
         return self.SearchAgain(node.child[key[pos]], key, pos+1)
 
 def main():
-    data = ['pramod', 'uttam', 'navin', 'prabesh', 'pramod']
+    data = ['pramod', 'uttam', 'navin', 'prabesh', 'pramod', 'pramodmjn']
     newTrie = Trie()
     for x in range(len(data)):
         newTrie.Insert(list(data[x]))
@@ -52,6 +55,8 @@ def main():
     print(newTrie.Search('pramod'))
     print(newTrie.Search(list('pamod')))
     print(newTrie.Search(list('saroj')))
+    print(newTrie.Count('pramod'))
+    print("No. of pramodmjn =",newTrie.Count('pramodmjn'))
 if __name__=="__main__":
     main()
 
