@@ -2,28 +2,53 @@ def Getwords(essay):
     list = essay.split()
     return list
 
-class Ngram:
-    Nvalue = 1
-    NgramList = {}
+class Preprocess:
     def __init__(self, val):
-        Ngram.nvalue = val
+        self.text = val
+        self.unigram = []
+        self.bigram = []
+        self.trigram = []
+        self.words = []
 
-    def GetNgram(self, list):
-        for i in range(len(list)-Ngram.nvalue+1):
-            ngram = list[i]
-            for j in range(1,Ngram.nvalue):
-                ngram = ngram+" "+list[i+j]
-            Ngram.NgramList[i] = ngram
+    def Getwords(self):
+        self.sent = self.text.lower().split(".")
+        del self.sent[-1]
+        for i in range(len(self.sent)):
+            line = self.sent[i].split()
+            self.words.extend(line)
+            self.unigram.extend(self.GetNgram(line, 1))
+            self.bigram.extend(self.GetNgram(line, 2))
+            self.trigram.extend(self.GetNgram(line, 3))
+
+
+    def GetNgram(self, twords, nval):
+        Ngram = []
+        for i in range(len(twords) - nval+1):
+            ngram = [twords[i]]
+            for j in range(1,nval):
+                ngram.append(twords[i+j])
+            Ngram.append(ngram)
+        return Ngram
+            
+
 
 def main():
-    examp = "Hi my name is pramod maharjan."
-    words = Getwords(examp)
+    examp = "Hi my name is pramod maharjan. I am in bad mood."
+    sentence = Preprocess(examp)
+    sentence.Getwords()
+    print(sentence.sent)
+    print(sentence.words)
+    print(sentence.unigram)
+    print(sentence.bigram)
+    print(sentence.trigram)
+
+    '''words = Getwords(examp)
     print words
     print len(words)
     bigram = Ngram(3)
     bigram.GetNgram(words)
     print Ngram.NgramList
-
+'''
 if __name__=="__main__":
     main()
 
