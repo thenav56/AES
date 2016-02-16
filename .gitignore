@@ -4,3 +4,7 @@ bin
 lib
 include
 pip-selfcheck.json
+*.pyc
+__pycache__/
+.ropeproject/
+local
