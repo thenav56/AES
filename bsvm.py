@@ -16,6 +16,12 @@ class BSVM:
         self.build()
 
     def obj(self, x):
+        n = len(x)
+        r = 0
+        #for i in range(n):
+        #    for j in range(n):
+        #        r += x[i] * x[j] * self.P[i][j]
+        #return 0.5 * r - sum(x)
         return 0.5 * np.dot(x.T, np.dot(self.P, x)) + np.dot(self.q, x)
 
     def kernel(self, a, b):
@@ -23,7 +29,7 @@ class BSVM:
         return s * s
 
     def computeSupportVectors(self):
-        self.support_vectors = [i for i in range(len(self.dataset)) if self.lambdas[i] >= 1e-5]
+        self.support_vectors = [i for i in range(len(self.dataset)) if self.lambdas[i] >= 1e-5 and self.lambdas[i] < self.C]
 
     def computeWX(self, x):
         r = 0
@@ -34,7 +40,7 @@ class BSVM:
 
     def classify(self, data):
         f = self.computeWX(data) + self.b
-        return 1 if f >= 0 else -1
+        return f
     
     def build(self):
         P = []
@@ -44,45 +50,32 @@ class BSVM:
                 td = self.kernel(data1, data2)
                 c = class1 * class2
                 r.append(td * c)
-            P.append(r)
-        G = []#lambda(i) >= 0
-        for i in range(len(self.dataset)):
-            r = [i == j for j in range(len(self.dataset))]
-            G.append(r)
-        A = [cl for _, cl in self.dataset]
-        q = [-1] * len(self.dataset)
-        cons = [
-                {'type':'ineq', 'fun' : lambda x : np.dot(G, x)},
-                {'type':'ineq', 'fun' : lambda x : self.C - np.dot(G, x)}, #C >= lambda(i)
-                {'type':'eq', 'fun' : lambda x : np.dot(A, x)} #summation(y(i)*lambda(i)) = 0
-               ]
+            P.append(np.array(r))
+        A = np.array([cl for _, cl in self.dataset])
+        q = np.array([-1] * len(self.dataset))
         self.q = q
         self.P = P
-        res_cons = optimize.minimize(self.obj, [0] * len(self.dataset), constraints = cons, method = 'SLSQP')
+        cons = [
+                {'type':'ineq', 'fun' : lambda x : x}, # lambda(i) >= 0
+                {'type':'ineq', 'fun' : lambda x : self.C - x}, #C >= lambda(i)
+                {'type':'eq', 'fun' : lambda x : np.dot(A, x)} #summation(y(i)*lambda(i)) = 0
+               ]
+        print('minimizing')
+        res_cons = optimize.minimize(self.obj, np.array([0] * len(self.dataset)), constraints = cons, method = 'SLSQP')
+        print('done')
         self.lambdas = res_cons.x
+        print(self.lambdas)
         self.computeSupportVectors()
         b = []
         s = 0
-        for l, i in enumerate(self.dataset):
-            if self.lambdas[l] >= 1e-5 and self.lambdas[l] < self.C: #if a support vector
-                bx = i[1] - self.computeWX(i[0])
-                b.append(bx)
+        for l, i in enumerate(self.support_vectors):
+            bx = self.dataset[l][1] - self.computeWX(self.dataset[i][0])
+            b.append(bx)
         self.b = sum(b) / len(b)
 
-    def evaluate(self):
-        for dat, cl in self.dataset:
-            print(self.classify(dat), 'act', cl)
-
 def main():
-    d = [
-            [(0, 0), -1],
-            [(0, 1), 1],
-            [(1, 0), 1],
-            [(1, 1), -1],
-        ]
-    cls = BSVM(d)
-    cls.build()
-    cls.evaluate()
+    pass
 
 if __name__ == "__main__":
     main()
+
