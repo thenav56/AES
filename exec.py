@@ -2,6 +2,7 @@
 
 from msvm import MSVM
 from sklearn import svm
+import time
 import numpy as np
 
 import csv
@@ -53,7 +54,7 @@ def main():
         header = data[0]
         data = data[1:]
 
-    features = ['Sex', 'Pclass', 'SibSp']
+    features = ['Sex', 'Pclass', 'SibSp', 'Parch']
     out_class = 'Survived'
     class_id = header.index(out_class)
     data_set = []
@@ -87,12 +88,18 @@ def main():
             rows.append(d)
             test_set.append(r)
     withsk(train_set, test_set, rows, out_features, out_class)
+    start = time.time()    
     model = MSVM(train_set, 1)
-    v = 0
-    for d, c in train_set:
-        r = model.classify(d)
-        #print(c, r)
-        v += int(c == r)
-    print('Accuracy', v / len(train_set))
+    end = time.time()
+    print('Total training time', end - start)
+    o = []
+    if 0:
+        for d in test_set:
+            o.append(model.classify(d))
+        print(','.join(out_features + [out_class]))
+        for i, c in enumerate(o):
+            s = ",".join(str(j) for j in rows[i])
+            print(s + ',' + str(c))
+    model.evaluate_on_train_data()
 
 main()

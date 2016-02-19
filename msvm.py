@@ -2,9 +2,20 @@
 #multiclass SVM
 from math import *
 import numpy as np
-from bsvm import BSVM
+from smo import BSVM
 from scipy import optimize
 import matplotlib.pyplot as plt
+
+# HOW TO USE?
+# model = MSVM(dataset)
+# where dataset is an array of pair of the form
+# (features_list, class) where each of the element of a features_list must be
+# integer or float
+# class can be any alphanumeric object
+# The model returned can be used to classify new
+# feature set
+# Just call model.classify(features_list)
+# where features_list is an array of features
 
 class MSVM:
 
@@ -51,9 +62,19 @@ class MSVM:
                 for j in range(i + 1, len(classes)):
                     cl1 = classes[i]#+ve class
                     cl2 = classes[j]#-ve class
-                    d1 = [(a, 1) for a in dict_cls[cl1]]
-                    d2 = [(a, -1) for a in dict_cls[cl2]]
-                    self.bsvms.append([cl1, cl2, BSVM(d1 + d2, self.C)])
+                    d1 = dict_cls[cl1]
+                    d2 = dict_cls[cl2]
+                    t1 = [1 for i in range(len(d1))]
+                    t2 = [-1 for i in range(len(d2))]
+                    self.bsvms.append([cl1, cl2, BSVM(d1 + d2, t1 + t2, self.C)])
+
+    def evaluate_on_train_data(self):
+        r = 0
+        for d, c in self.dataset:
+            cr = self.classify(d)
+            r += c == cr
+        print('Accuracy', r / len(self.dataset))
+
 
 def main():
     pass
