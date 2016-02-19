@@ -5,6 +5,7 @@ import numpy as np
 from smo import BSVM
 from scipy import optimize
 import matplotlib.pyplot as plt
+from random import shuffle
 
 # HOW TO USE?
 # model = MSVM(dataset)
@@ -54,8 +55,10 @@ class MSVM:
         dict_cls = {}
         for i in classes:
             dict_cls[i] = []
+        p = 0
         for a, b in self.dataset:
-            dict_cls[b].append(a)
+            dict_cls[b].append(p)
+            p += 1
         if len(classes) > 1:
             self.bsvms = []
             for i in range(len(classes)):
@@ -64,9 +67,11 @@ class MSVM:
                     cl2 = classes[j]#-ve class
                     d1 = dict_cls[cl1]
                     d2 = dict_cls[cl2]
-                    t1 = [1 for i in range(len(d1))]
-                    t2 = [-1 for i in range(len(d2))]
-                    self.bsvms.append([cl1, cl2, BSVM(d1 + d2, t1 + t2, self.C)])
+                    r = sorted(d1 + d2)
+                    shuffle(r)
+                    d = [self.dataset[i][0] for i in r]
+                    t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
+                    self.bsvms.append([cl1, cl2, BSVM(d, t, self.C)])
 
     def evaluate_on_train_data(self):
         r = 0

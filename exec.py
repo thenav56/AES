@@ -2,6 +2,7 @@
 
 from msvm import MSVM
 from sklearn import svm
+from random import shuffle
 import time
 import numpy as np
 
@@ -48,12 +49,13 @@ def transform(data, features, header, dic):
     return np.array(r)
 
 def main():
+    tot = int(input('Train size: '))
     with open('train.csv', 'r') as f:
         data = csv.reader(f, delimiter=',')
         data = [i for i in data]
         header = data[0]
-        data = data[1:]
-
+        data = data[1 : 1 + tot]
+    shuffle(data)
     features = ['Sex', 'Pclass', 'SibSp', 'Parch']
     out_class = 'Survived'
     class_id = header.index(out_class)
@@ -69,9 +71,14 @@ def main():
     for k in dic:
         dic[k] = list(dic[k])
     train_set = []
+    train_target = []
     for i in data:
         r = transform(i, features, header, dic)
+        #for j in r: print(j)
         train_set.append([r, i[class_id]])
+        train_target.append(1 if i[class_id] == '1' else -1)
+    #for i in train_target: print(i)
+    #return 
     test_set = []
     out_features = ['PassengerId']
     rows = []

@@ -71,14 +71,6 @@ class BSVM:
         k11 = self.kernel(self.data[i1], self.data[i1])
         k12 = self.kernel(self.data[i1], self.data[i2])
         k22 = self.kernel(self.data[i2], self.data[i2])
-        v1 = self.func(i1) + bold - y1 * alph1 * k11 - y2 * alph2 * k12
-        v2 = self.func(i2) + bold - y1 * alph1 * k12 - y2 * alph2 * k22
-        objective = lambda a: \
-            a * (1 - s) \
-                    - 0.5 * k11 * ((gamma - s * a) ** 2) \
-                    - 0.5 * k22 * a * a \
-                    - (gamma - s * a) * (s * k12 * a + y1 * v1) \
-                    - y2 * a * v2
         eta = 2 * k12 - k11 - k22
         E1 = self.getError(i1)
         E2 = self.getError(i2)
@@ -89,6 +81,15 @@ class BSVM:
             elif a2 > H:
                 a2 = H
         else: #WHY??
+            #print('here')
+            v1 = self.getError(i1) + y1 + bold - y1 * alph1 * k11 - y2 * alph2 * k12
+            v2 = self.getError(i2) + y2 + bold - y1 * alph1 * k12 - y2 * alph2 * k22
+            objective = lambda a: \
+                a * (1 - s) \
+                        - 0.5 * k11 * ((gamma - s * a) ** 2) \
+                        - 0.5 * k22 * a * a \
+                        - (gamma - s * a) * (s * k12 * a + y1 * v1) \
+                        - y2 * a * v2
             Lobj = objective(L)
             Hobj = objective(H)
             if Lobj > Hobj + eps:
@@ -186,7 +187,7 @@ class BSVM:
             #print(self.alpha)
         
         #print('Converged')
-        #print(self.alpha)
+        print(self.alpha)
         #print(self.b)
 
     def evaluate_on_train_data(self):
@@ -199,12 +200,16 @@ class BSVM:
 
 def main():
     data = [
-            [0, 0],
-            [0, 1],
-            [1, 0],
-            [1, 1]
-           ]
-    target = [1, -1, -1, 1]
+        [0.3858, 0.4687],
+        [0.4871, 0.6110],
+        [0.9218, 0.4103],
+        [0.7382, 0.8936],
+        [0.1763, 0.0579],
+        [0.4057, 0.3529],
+        [0.9355, 0.8132],
+        [0.2146, 0.0099],
+    ]
+    target = [1, -1, -1, -1, 1, 1, -1, 1]
     r = BSVM(data, target, 10)
     r.evaluate_on_train_data()
 
