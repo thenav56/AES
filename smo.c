@@ -4,172 +4,174 @@
 #include <math.h>
 #include <time.h>
 
-#define fsz 5 //feature size
-
-#define MAXSZ 891
-
-#define numdata 500
-
 #define min(a, b) ((a) <= (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-float C = 1;
-float error_cache[MAXSZ];
-float alpha[MAXSZ];
-float b;
-float tol = 1e-3;
-float eps = 1e-5;
+typedef struct Smoinfo {
+    float tol, eps; //constants
+    float * error_cache, * alpha;
+    float b;
+    const float * data, * target;
+    float C;
+    int numdata, fsz;
+} Smoinfo;
 
-float data[MAXSZ][fsz] = {};
-float target[MAXSZ] = {};
-
-float kernel(const float * a, const float * b) {
+float kernel(const float * a, const float * b, Smoinfo * info) {
     int i;
     float r = 0;
-    for (i = 0; i < fsz; ++i) {
+    for (i = 0; i < info->fsz; ++i) {
         r += a[i] * b[i];
     }
     return (r + 1) * (r + 1);
 }
 
-int classify(float * x) {
+int classify(const float * x, Smoinfo * info) {
     float r = 0;
-    int i;
-    for (i = 0; i < numdata; ++i) {
-        if (alpha[i] > 0) {
-            r += alpha[i] * target[i] * kernel(data[i], x);
+    int i, p;
+    for (i = p = 0; i < info->numdata; ++i, p += info->fsz) {
+        if (info->alpha[i] > 0) {
+            r += info->alpha[i] * info->target[i] * kernel(&info->data[p], x, info);
         }
     }
-    return r >= b ? 1 : -1;
+    return r >= info->b ? 1 : -1;
 }
 
-#define getError(i) (error_cache[i])
-//float getError(int ind) {
-//    return error_cache[ind];
-//}
+float func(const float * x, Smoinfo * info) {
+    float r = 0;
+    int i, p;
+    for (i = p = 0; i < info->numdata; ++i, p += info->fsz) {
+        if (info->alpha[i] > 0) {
+            r += info->alpha[i] * info->target[i] * kernel(&info->data[p], x, info);
+        }
+    }
+    return r - info->b;
+}
 
-int takestep(int i1, int i2) {
+float getError(int i, Smoinfo * info) {
+    return (info->alpha[i] > 0 && info->alpha[i] < info->C) ? info->error_cache[i] : func(&info->data[(i) * info->fsz], info) - info->target[i];
+}
+
+int takestep(int i1, int i2, Smoinfo * info) {
     if (i1 == i2) return 0;
-    float alph1 = alpha[i1];
-    float alph2 = alpha[i2];
-    float y1 = target[i1];
-    float y2 = target[i2];
-    float bold = b;
+    float alph1 = info->alpha[i1];
+    float alph2 = info->alpha[i2];
+    float y1 = info->target[i1];
+    float y2 = info->target[i2];
+    float bold = info->b;
     float s = y1 * y2;
     float gamma = alph1 + s * alph2;
     float L, H;
     if (s == -1) {
         L = max(0, alph2 - alph1);
-        H = min(C, C + alph2 - alph1);
+        H = min(info->C, info->C + alph2 - alph1);
     } else {
-        L = max(0, alph1 + alph2 - C);
-        H = min(C, alph1 + alph2);
+        L = max(0, alph1 + alph2 - info->C);
+        H = min(info->C, alph1 + alph2);
     }
     if (L == H) return 0;
-    float k11 = kernel(data[i1], data[i1]);
-    float k12 = kernel(data[i1], data[i2]);
-    float k22 = kernel(data[i2], data[i2]);
+    const float * d1 = &info->data[i1 * info->fsz];
+    const float * d2 = &info->data[i2 * info->fsz];
+    float k11 = kernel(d1, d1, info);
+    float k12 = kernel(d1, d2, info);
+    float k22 = kernel(d2, d2, info);
     float eta = 2 * k12 - k11 - k22;
-    float E1 = getError(i1);
-    float E2 = getError(i2);
+    float E1 = getError(i1, info);
+    float E2 = getError(i2, info);
     float a2;
     if (eta < 0) {
         a2 = alph2 - y2 * (E1 - E2) / eta;
         if (a2 < L) a2 = L;
         if (a2 > H) a2 = H;
     } else {
-        float v1, v2;
-        v1 = getError(i1) + y1 + bold - y1 * alph1 * k11 - y2 * alph2 * k12; 
-        v2 = getError(i2) + y2 + bold - y1 * alph1 * k12 - y2 * alph2 * k22; 
-        float Lobj = L * (1 - s) 
-            - 0.5 * k11 * (gamma - s * L) * (gamma - s * L)
-            - 0.5 * k22 * L * L 
-            - (gamma - s * L) * (s * k12 * L + y1 * v1)
-            - y2 * L * v2;
-        float Hobj = H * (1 - s) 
-            - 0.5 * k11 * (gamma - s * H) * (gamma - s * H)
-            - 0.5 * k22 * H * H 
-            - (gamma - s * H) * (s * k12 * H + y1 * v1)
-            - y2 * H * v2;
-        if (Lobj > Hobj + eps) a2 = L;
-        else if (Lobj < Hobj - eps) a2 = H;
+        float c2 = y2 * (E1 - E2);
+        float Lobj = c2 * L;
+        float Hobj = c2 * H;
+        if (Lobj > Hobj + info->eps) a2 = L;
+        else if (Lobj < Hobj - info->eps) a2 = H;
         else a2 = alph2;
     }
     if (fabs(a2) < 1e-8) a2 = 0;
-    else if (fabs(a2 - C) < 1e-8) a2 = C;
-    if (fabs(a2 - alph2) < eps * (a2 + alph2 + eps)) return 0;
+    else if (fabs(a2 - info->C) < 1e-8) a2 = info->C;
+    if (fabs(a2 - alph2) < info->eps * (a2 + alph2 + info->eps)) return 0;
     float a1 = alph1 + s * (alph2 - a2);
     if (a1 < 0) a1 = 0;
     float b1 = bold + E1 + y1 * (a1 - alph1) * k11 + y2 * (a2 - alph2) * k12;
     float b2 = bold + E2 + y1 * (a1 - alph1) * k12 + y2 * (a2 - alph2) * k22;
-    b = (b1 + b2) / 2;
-    alpha[i1] = a1;
-    alpha[i2] = a2;
-    int i;
+    info->b = (b1 + b2) / 2;
+    int i, p;
     float del1 = y1 * (a1 - alph1);
     float del2 = y2 * (a2 - alph2);
-    for (i = 0; i < numdata; ++i) {
-        float kr1 = kernel(data[i1], data[i]);
-        float kr2 = kernel(data[i2], data[i]);
-        error_cache[i] += del1 * kr1 + del2 * kr2 + bold - b;
+    info->alpha[i1] = a1;
+    info->alpha[i2] = a2;
+    for (i = 0, p = 0; i < info->numdata; ++i, p += info->fsz) {
+        if (info->alpha[i] > 0 && info->alpha[i] < info->C) {
+            float kr1 = kernel(d1, &info->data[p], info);
+            float kr2 = kernel(d2, &info->data[p], info);
+            info->error_cache[i] += del1 * kr1 + del2 * kr2 + bold - info->b;
+        }
+    }
+    //a1 was in bounds previously
+    //but not now, so need to get new error value
+    if (alph1 == 0 || alph1 == info->C) { 
+        if (a1 > 0 && a1 < info->C) {
+            info->error_cache[i1] = func(d1, info) - info->target[i1];
+        }
+    }
+    if (alph2 == 0 || alph2 == info->C) {
+        if (a2 > 0 && a2 < info->C) {
+            info->error_cache[i2] = func(d2, info) - info->target[i2];
+        }
     }
     return 1;
 }
 
-int ex_example(int i2) {
-    float y2 = target[i2];
-    float alph2 = alpha[i2];
-    float E2 = getError(i2);
+int ex_example(int i2, Smoinfo * info) {
+    float y2 = info->target[i2];
+    float alph2 = info->alpha[i2];
+    float E2 = getError(i2, info);
     float r2 = E2 * y2;
     int i;
-    if ((r2 < -tol && alph2 < C) || (r2 > tol && alph2 > 0)) {
-        int c = 0;
-        for (i = 0; i < numdata; ++i) {
-            c += alpha[i] > 0 && alpha[i] < C;
-        }
-        if (c > 1) {
-            int i1 = -1;
-            float err;
-            for (i = 0; i < numdata; ++i) {
-                if (i != i2) {
-                    float e1 = fabs(E2 - getError(i));
-                    if (i1 == -1 || e1 > err) {
-                        i1 = i;
-                        err = e1;
-                    }
+    if ((r2 < -info->tol && alph2 < info->C) || (r2 > info->tol && alph2 > 0)) {
+        int i1 = -1;
+        float err;
+        for (i = 0; i < info->numdata; ++i) {
+            if (i != i2 && info->alpha[i] > 0 && info->alpha[i] < info->C) {
+                float e1 = fabs(E2 - getError(i, info));
+                if (i1 == -1 || e1 > err) {
+                    i1 = i;
+                    err = e1;
                 }
             }
-            if (takestep(i1, i2)) return 1;
         }
-        for (i = 0; i < numdata; ++i) {
-            if (alpha[i] > 0 && alpha[i] < C && takestep(i, i2))
+        if (i1 != -1 && takestep(i1, i2, info)) return 1;
+        for (i = 0; i < info->numdata; ++i) {
+            if (info->alpha[i] > 0 && info->alpha[i] < info->C && takestep(i, i2, info))
                 return 1;
         }
-        for (i = 0; i < numdata; ++i) {
-            if (takestep(i, i2)) return 1;
+        for (i = 0; i < info->numdata; ++i) {
+            if (takestep(i, i2, info)) return 1;
         }
     }
     return 0;
 }
 
-void main_routine() {
-    b = 0;
+void main_routine(Smoinfo * info) {
+    info->b = 0;
     int i;
-    for (i = 0; i < numdata; ++i) {
-        alpha[i] = 0;
-        error_cache[i] = -target[i];
+    for (i = 0; i < info->numdata; ++i) {
+        info->alpha[i] = 0;
     }
     int numChanged = 0, examineAll = 1;
     while (numChanged || examineAll) {
         numChanged = 0;
         if (examineAll) {
-            for (i = 0; i < numdata; ++i) {
-                numChanged += ex_example(i);
+            for (i = 0; i < info->numdata; ++i) {
+                numChanged += ex_example(i, info);
             }
         } else {
-            for (i = 0; i < numdata; ++i) {
-                if (alpha[i] > 0 && alpha[i] < C) {
-                    numChanged += ex_example(i);
+            for (i = 0; i < info->numdata; ++i) {
+                if (info->alpha[i] > 0 && info->alpha[i] < info->C) {
+                    numChanged += ex_example(i, info);
                 }
             }
         }
@@ -178,32 +180,34 @@ void main_routine() {
     }
 }
 
-void load() {
-    FILE * fp = fopen("out", "r");
-    int i;
-    int j;
-    for (i = 0; i < MAXSZ; ++i) {
-        for (j = 0; j < fsz; ++j) {
-            fscanf(fp, "%f", data[i] + j);
-        }
+int routine2(Smoinfo * info) {
+    clock_t start = clock();
+    main_routine(info);
+    printf("Tot time = %.8f\n", (clock() - start) / (float)CLOCKS_PER_SEC);
+    int i = 0, p;
+    int r = 0;
+    for (i = p = 0; i < info->numdata; ++i, p += info->fsz) {
+        r += classify(info->data + p, info) == info->target[i];
     }
-    for (i = 0; i < MAXSZ; ++i) {
-        fscanf(fp, "%f", target + i);
-        printf("%f\n", target[i]);
-    }
+    printf("accuracy = %f\n", r / (float)(info->numdata));
+    return 0;
 }
 
-int main() {
-    load();
-    clock_t start = clock();
-    main_routine();
-    printf("Tot time = %.8f\n", (clock() - start) / (float)CLOCKS_PER_SEC);
-    int i = 0;
-    int r = 0;
-    for (i = 0; i < numdata; ++i) {
-        //printf("%d %f\n", classify(data[i]), target[i]);
-        r += classify(data[i]) == target[i];
-    }
-    printf("accuracy = %f\n", r / (float)(numdata));
-    return 0;
+//returns bias
+//main interface used by the bsvm.py module
+//
+float solve(const float * data, const float * target, float * alpha, float * error_cache, int num_data, int num_features) {
+    int i;
+    Smoinfo info;
+    info.numdata = num_data;
+    info.fsz = num_features;
+    info.data = data;
+    info.target = target;
+    info.alpha = alpha;
+    info.error_cache = error_cache;
+    info.tol = 1e-3;
+    info.eps = 1e-5;
+    info.C = 1;
+    main_routine(&info);
+    return info.b;
 }

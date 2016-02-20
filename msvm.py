@@ -2,7 +2,7 @@
 #multiclass SVM
 from math import *
 import numpy as np
-from smo import BSVM
+from bsvm import BSVM
 from scipy import optimize
 import matplotlib.pyplot as plt
 from random import shuffle
@@ -67,11 +67,10 @@ class MSVM:
                     cl2 = classes[j]#-ve class
                     d1 = dict_cls[cl1]
                     d2 = dict_cls[cl2]
-                    r = sorted(d1 + d2)
-                    shuffle(r)
+                    r = d1 + d2;
                     d = [self.dataset[i][0] for i in r]
                     t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
-                    self.bsvms.append([cl1, cl2, BSVM(d, t, self.C)])
+                    self.bsvms.append([cl1, cl2, BSVM(d, t)])
 
     def evaluate_on_train_data(self):
         r = 0

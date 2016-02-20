@@ -25,7 +25,7 @@ def withsk(data, test, rows, out_features, out_class, pr = False):
     cl.fit(train_set, train_target)
     o = cl.predict(test)
     o = list(o)
-    print(cl.score(train_set, train_target)) 
+    print('sk', cl.score(train_set, train_target)) 
     if pr:
         print(','.join(out_features + [out_class]))
         for i, c in enumerate(o):
@@ -56,7 +56,7 @@ def main():
         header = data[0]
         data = data[1 : 1 + tot]
     shuffle(data)
-    features = ['Sex', 'Pclass', 'SibSp', 'Parch']
+    features = ['Sex', 'Pclass', 'Parch', 'SibSp']
     out_class = 'Survived'
     class_id = header.index(out_class)
     data_set = []
@@ -72,13 +72,13 @@ def main():
         dic[k] = list(dic[k])
     train_set = []
     train_target = []
+    s1 = []
     for i in data:
         r = transform(i, features, header, dic)
-        #for j in r: print(j)
         train_set.append([r, i[class_id]])
+        s1 += list(r)
         train_target.append(1 if i[class_id] == '1' else -1)
-    #for i in train_target: print(i)
-    #return 
+
     test_set = []
     out_features = ['PassengerId']
     rows = []
@@ -89,6 +89,7 @@ def main():
         data = data[1:]
         for i in data:
             r = transform(i, features, header, dic)
+            #for j in r: print(j)
             d = []
             for j in out_features:
                 d.append(i[header.index(j)])
