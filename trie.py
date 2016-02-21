@@ -53,7 +53,22 @@ class Trie:
             return 0
         return self.SearchAgain(node.child[index], key, wpos, lpos+1)
 
+def Readfile(filename):
+    vocabulary = []
+    file = open(filename, "r", encoding="latin-1")
+    for line in file:
+        ngram = line.split()
+        del ngram[0]
+        vocabulary.append(ngram)
+    return vocabulary
+
 def main():
+    vocabulary = Readfile("3gram.txt")
+    tritree = Trie(3)
+    for ngram in vocabulary:
+        tritree.Insert(ngram)
+
+    #print(tritree.Search(['the', 'world', 'is']))
     #data = ['pramod', 'uttam', 'navin', 'prabesh', 'pramod', 'pramodmjn']
     newTrie = Trie(2)
     newTrie.Insert(['my', 'project'])

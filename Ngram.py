@@ -1,6 +1,16 @@
-def Getwords(essay):
-    list = essay.split()
-    return list
+
+import sys, getopt
+from trie import Trie
+
+def Readfile(filename):
+    vocabulary = []
+    file = open(filename, "r", encoding="latin-1")
+    for line in file:
+        ngram = line.split()
+        del ngram[0]
+        vocabulary.append(ngram)
+    return vocabulary
+
 
 class Preprocess:
     def __init__(self, val):
@@ -9,16 +19,18 @@ class Preprocess:
         self.bigram = []
         self.trigram = []
         self.words = []
+        self.Getwords()
 
     def Getwords(self):
-        self.sent = self.text.lower().split(".")
-        del self.sent[-1]
-        for i in range(len(self.sent)):
-            line = self.sent[i].split()
-            self.words.extend(line)
-            self.unigram.extend(self.GetNgram(line, 1))
-            self.bigram.extend(self.GetNgram(line, 2))
-            self.trigram.extend(self.GetNgram(line, 3))
+        sent = self.text.lower().split(".")
+        del sent[-1]
+        for i in range(len(sent)):
+            line = sent[i].replace(",", "").replace("'", "")
+            twords = line.split()
+            self.words.extend(twords)
+            self.unigram.extend(self.GetNgram(twords, 1))
+            self.bigram.extend(self.GetNgram(twords, 2))
+            self.trigram.extend(self.GetNgram(twords, 3))
 
 
     def GetNgram(self, twords, nval):
@@ -29,18 +41,52 @@ class Preprocess:
                 ngram.append(twords[i+j])
             Ngram.append(ngram)
         return Ngram
+
+    def CountWords(self):
+        return len(self.words)
+
+    def CountBigram(self):
+        return len(self.bigram)
+
+    def CountTrigram(self):
+        return len(self.trigram)
             
 
 
-def main():
-    examp = "Hi my name is pramod maharjan. I am in bad mood."
-    sentence = Preprocess(examp)
-    sentence.Getwords()
-    print(sentence.sent)
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv,"hi:",["ifile="])
+    except getopt.GetoptError:
+        print('test.py -i <inputfile>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == "-h":
+            print('test.py -i <inputfile>')
+            sys.exit(2)
+        if opt in ("-i", "--ifile"):
+            filename = arg
+    content = open(filename).read()
+    sentence = Preprocess(content)
+   
+    vocabulary = Readfile("3gram.txt")
+    tritree = Trie(3)
+    for ngram in vocabulary:
+        tritree.Insert(ngram)
+
+
     print(sentence.words)
-    print(sentence.unigram)
-    print(sentence.bigram)
-    print(sentence.trigram)
+    print(sentence.CountWords())
+    print(sentence.CountTrigram())
+    
+    hit = 0
+    miss = 0
+    for tri in sentence.trigram:
+        if(tritree.Search(tri)):
+            hit += 1
+        else:
+            miss += 1
+
+    print(hit," ", miss)
 
     '''words = Getwords(examp)
     print words
@@ -50,5 +96,5 @@ def main():
     print Ngram.NgramList
 '''
 if __name__=="__main__":
-    main()
+    main(sys.argv[1:])
 
