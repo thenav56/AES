@@ -67,8 +67,8 @@ def main(argv):
             filename = arg
     content = open(filename).read()
     sentence = Preprocess(content)
-    
-    '''vocabulary = Readfile("3gram.txt")
+   
+    vocabulary = Readfile("3gram.txt")
     tritree = Trie(3)
     for ngram in vocabulary:
         tritree.Insert(ngram)
@@ -87,24 +87,6 @@ def main(argv):
             miss += 1
 
     print(hit," ", miss)
-'''
-    vocabulary = Readfile("2gram.txt")
-    bitree = Trie(2)
-    for ngram in vocabulary:
-        bitree.Insert(ngram)
-
-    print(sentence.words)
-    print(sentence.CountBigram())
-    hit = 0
-    miss = 0
-    for bi in sentence.bigram:
-        if(bitree.Search(bi)):
-            hit += 1
-        else:
-            miss += 1
-            print(bi)
-
-    print(hit, " ", miss)
 
     '''words = Getwords(examp)
     print words

@@ -1,6 +1,7 @@
 # Virtualenv
-.Python
 bin
 lib
 include
 pip-selfcheck.json
+
+*.txt
