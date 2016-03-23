@@ -3,9 +3,9 @@
 # spell checking and correction module
 import re
 import time
-# import csv
+import csv
 # import sys
-# import ast
+import ast
 
 
 class cspell:
@@ -17,28 +17,28 @@ class cspell:
     dictionary = {}
     longest_word_length = 0
 
-
     def __init__(self, dictfile):
         start_time = time.time()
-        # cache_dict = "cache_dict.csv"
-        # try:
-            # w = csv.reader(open(cache_dict, "r"))
-            # for row in w:
-                # [key,  value] = row
-                # self.longest_word_length = max(self.longest_word_length,  len(key))
-                # self.dictionary[key] = ast.literal_eval(value)
-        # except FileNotFoundError:
-                # self.create_dictionary(dictfile)
-                # w = csv.writer(open(cache_dict, "w"))
-                # for key,  val in self.dictionary.items():
-                    # w.writerow([key,  val])
-        wc = open(dictfile,"r")
-        for line in wc:
-            line = line.rstrip('\n')
-            line = line.replace("\t", " ")
-            word = line.split(" ")
-            self.longest_word_length = max(self.longest_word_length, len(word[0]))
-            self.dictionary[word[0]] = [ [], int(word[1])]
+        cache_dict = "cache_dict.csv"
+        try:
+            w = csv.reader(open(cache_dict, "r"))
+            for row in w:
+                [key,  value] = row
+                self.longest_word_length = max(self.longest_word_length,
+                        len(key))
+                self.dictionary[key] = ast.literal_eval(value)
+        except FileNotFoundError:
+                self.create_dictionary(dictfile)
+                w = csv.writer(open(cache_dict, "w"))
+                for key,  val in self.dictionary.items():
+                    w.writerow([key,  val])
+        # wc = open(dictfile,"r")
+        # for line in wc:
+            # line = line.rstrip('\n')
+            # line = line.replace("\t", " ")
+            # word = line.split(" ")
+            # self.longest_word_length = max(self.longest_word_length, len(word[0]))
+            # self.dictionary[word[0]] = [ [], int(word[1])]
         run_time = time.time() - start_time
         print('-----')
         print('%.2f seconds to run' % run_time)
@@ -341,7 +341,7 @@ class cspell:
 
 if __name__ == "__main__":
 
-    dictfile = "../files/wordscount.txt"
+    dictfile = "../files/big.txt"
     cp = cspell(dictfile)
 
     print("Word correction ")
