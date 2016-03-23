@@ -1985,6 +1985,7 @@ badness	1
 baffled	8
 baffling	2
 bag	21
+babbage 2
 baggage	39
 baggers	2
 bagging	2
