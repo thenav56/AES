@@ -73,7 +73,19 @@ def main():
         for j in i:
             bagofwords.add(j)
     print(len(bagofwords))
+    dictfile = "cspell/files/big.txt"
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("cspell", "cspell/spell_corrector/cspell.py")
+    cs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cs)
+    cp = cs.cspell(dictfile)
+    print("spellcorrector loaded")
+    corrected_bag = []
     for i in bagofwords:
-        print(i)
-
+        nearest = cp.best_word(i)
+        print(i, nearest)
+        input()
+        if nearest != None:
+            corrected_bag.append(nearest)
+    print(len(corrected_bag))
 main()
