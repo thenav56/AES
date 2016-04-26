@@ -4,6 +4,7 @@ from msvm import MSVM
 from sklearn import svm
 from random import shuffle
 import time
+import string
 import numpy as np
 
 import csv
@@ -48,66 +49,31 @@ def transform(data, features, header, dic):
             r.append(float(data[ind]))
     return np.array(r)
 
-def main():
-    tot = int(input('Train size: '))
-    with open('train.csv', 'r') as f:
-        data = csv.reader(f, delimiter=',')
-        data = [i for i in data]
-        header = data[0]
-        data = data[1 : 1 + tot]
-    shuffle(data)
-    features = ['Sex', 'Pclass', 'Parch', 'SibSp']
-    out_class = 'Survived'
-    class_id = header.index(out_class)
-    data_set = []
-    dic = {}
-    for i in data:
-        for j in features:
-            ind = header.index(j)
-            if not isfloat(i[ind]):
-                if j not in dic:
-                    dic[j] = set()
-                dic[j].add(i[ind])
-    for k in dic:
-        dic[k] = list(dic[k])
-    train_set = []
-    train_target = []
-    s1 = []
-    for i in data:
-        r = transform(i, features, header, dic)
-        train_set.append([r, i[class_id]])
-        s1 += list(r)
-        train_target.append(1 if i[class_id] == '1' else -1)
+def process(d):
+    r = []
+    for i in d:
+        i = i.lower()
+        if '@' not in i[0]:
+            t = [j for j in i if j in string.ascii_lowercase]
+            r.append(''.join(t))
+    return r
 
-    test_set = []
-    out_features = ['PassengerId']
-    rows = []
-    with open('test.csv', 'r') as f:
-        data = csv.reader(f, delimiter=',')
-        data = [i for i in data]
-        header = data[0]
-        data = data[1:]
-        for i in data:
-            r = transform(i, features, header, dic)
-            #for j in r: print(j)
-            d = []
-            for j in out_features:
-                d.append(i[header.index(j)])
-            rows.append(d)
-            test_set.append(r)
-    withsk(train_set, test_set, rows, out_features, out_class)
-    start = time.time()    
-    model = MSVM(train_set, 1)
-    end = time.time()
-    print('Total training time', end - start)
-    o = []
-    if 0:
-        for d in test_set:
-            o.append(model.classify(d))
-        print(','.join(out_features + [out_class]))
-        for i, c in enumerate(o):
-            s = ",".join(str(j) for j in rows[i])
-            print(s + ',' + str(c))
-    model.evaluate_on_train_data()
+def main():
+    from openpyxl import load_workbook
+    wb = load_workbook('train.xlsx')
+    ws = wb.active
+    data = [[j.value for j in i] for i in ws]
+    data = list(zip(*data))
+    essay = data[2][1:]
+    essay = [i.split() for i in essay]
+    essay = [process(i) for i in essay]
+    score = data[6][1:]
+    bagofwords = set()
+    for i in essay:
+        for j in i:
+            bagofwords.add(j)
+    print(len(bagofwords))
+    for i in bagofwords:
+        print(i)
 
 main()
