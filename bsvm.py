@@ -19,7 +19,7 @@ class BSVM:
         return r - self.b
 
     def build(self):
-        test = ctypes.CDLL("./lsmo.so")
+        test = ctypes.CDLL("./smo/lsmo.so")
 
         #FUNCTION PARAMETERS
         test.solve.argtypes = [
