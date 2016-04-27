@@ -22,6 +22,7 @@ float kernel(const float * a, const float * b, Smoinfo * info) {
     for (i = 0; i < info->fsz; ++i) {
         r += a[i] * b[i];
     }
+    return r; //linear
     return (r + 1) * (r + 1);
 }
 
@@ -209,5 +210,6 @@ float solve(const float * data, const float * target, float * alpha, float * err
     info.eps = 1e-5;
     info.C = 1;
     main_routine(&info);
+    //routine2(&info);
     return info.b;
 }

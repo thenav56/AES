@@ -38,6 +38,8 @@ def vectorize(essay, bagofwords, idf_vector):
     v = []
     for r, i in enumerate(bagofwords):
         tf = essay.get(i, 0)
+        if tf > 0:
+            print(i, tf)
         v.append(tf * idf_vector[r])
     #v.append(essay.get(None, 0))#incorrect spellings
     #v.append(sum(i for _, i in essay.items())) #length of essay in words
@@ -68,7 +70,7 @@ def main():
     essay = [[bword[j] for j in i] for i in essay]
     essay = [essaytodict(i) for i in essay]
 #total essays 1783
-    train_len = 1700 #training set size
+    train_len = 700 #training set size
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
@@ -99,13 +101,17 @@ def main():
     clf = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
     print('training svm')
     clf.fit(train_vectors, train_score)
-    print('finished svm')
-    #FOR TESTING OUR OWN SVM
-    #model2 = MSVM(list(zip(train_vectors, train_score)))
-    #print('finishedmsvm')
-    #model2.evaluate_on_train_data()
     print('training set fit', clf.score(train_vectors, train_score))
     print('test set fit', clf.score(test_vectors, test_score))
+    print('finished svm')
+    input('enter to continue...')
+    #FOR TESTING OUR OWN SVM
+#    print('training own')
+#    model2 = MSVM(list(zip(train_vectors, train_score)))
+#    print('ownfinished')
+#    print('train', model2.score(train_vectors, train_score))
+#    print('test', model2.score(test_vectors, test_score, 1))
+    input('enter to continue...')
     p = clf.predict(test_vectors)
     dc = {}
     count = {}
@@ -123,9 +129,9 @@ def main():
     while True:
         s = input('Write an essay\n')
         s = process(s.split())
-        s = [cp.best_word(i) for i in s]
         s = essaytodict(s)
         s = vectorize(s, bagofwords, idf_v)
+        print(sum(s))
         print(clf.predict([s]))
 
 main()

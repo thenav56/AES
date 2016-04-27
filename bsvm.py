@@ -9,6 +9,7 @@ class BSVM:
         self.build()
 
     def kernel(self, a, b):
+        return np.dot(a, b)
         return (np.dot(a, b) + 1) ** 2
 
     def classify(self, x):
@@ -16,7 +17,7 @@ class BSVM:
         for i in range(len(self.data)):
             if self.alpha[i] > 0:
                 r += self.alpha[i] * self.target[i] * self.kernel(self.data[i], x)
-        return r - self.b
+        return 1 if r - self.b >= 0 else -1
 
     def build(self):
         test = ctypes.CDLL("./smo/lsmo.so")

@@ -52,6 +52,7 @@ class MSVM:
         classes = set(i for _, i in self.dataset)
         classes = [i for i in classes]#convert above to array
         self.classes = classes
+        print(self.classes)
         dict_cls = {}
         for i in classes:
             dict_cls[i] = []
@@ -70,15 +71,17 @@ class MSVM:
                     r = d1 + d2;
                     d = [self.dataset[i][0] for i in r]
                     t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
-                    self.bsvms.append([cl1, cl2, BSVM(d, t)])
+                    model = BSVM(d, t)
+                    self.bsvms.append([cl1, cl2, model])
 
-    def evaluate_on_train_data(self):
+    def score(self, data, target, pr = False):
         r = 0
-        for d, c in self.dataset:
+        for i, d in enumerate(data):
             cr = self.classify(d)
-            r += c == cr
-        print('Accuracy', r / len(self.dataset))
-
+            r += target[i] == cr
+            if pr:
+                print('running', r / (i + 1))
+        return r / len(data)
 
 def main():
     pass
