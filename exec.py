@@ -17,39 +17,6 @@ def isfloat(n):
     except ValueError:
         return 0
 
-def withsk(data, test, rows, out_features, out_class, pr = False):
-    train_set = []
-    train_target = []
-    for a, b in data:
-        train_set.append(a)
-        train_target.append(b)
-    cl = svm.SVC(kernel = 'poly', degree = 2)
-    cl.fit(train_set, train_target)
-    o = cl.predict(test)
-    o = list(o)
-    print('sk', cl.score(train_set, train_target)) 
-    if pr:
-        print(','.join(out_features + [out_class]))
-        for i, c in enumerate(o):
-            s = ",".join(str(j) for j in rows[i])
-            print(s + ',' + str(c))
-    r = cl.support_
-#    for i, j in enumerate(r):
-#        print(data[j], cl.support_vectors_[i])
-#        print(data[j])
-#        input()
-
-def transform(data, features, header, dic):
-    r = []
-    for j in features:
-        ind = header.index(j)
-        if j in dic:
-            for k in dic[j]:
-                r.append(1 if data[ind] == k else 0)
-        else:
-            r.append(float(data[ind]))
-    return np.array(r)
-
 def process(d):
     r = []
     for i in d:
@@ -67,16 +34,20 @@ def loadspellcorrector():
     spec.loader.exec_module(cs)
     return cs.cspell(dictfile)
 
-def euc_dissimilarity(a, b):
-    return sum((i - j) ** 2 for i, j in zip(a, b))
+def vectorize(essay, bagofwords, idf_vector):
+    v = []
+    for r, i in enumerate(bagofwords):
+        tf = essay.get(i, 0)
+        v.append(tf * idf_vector[r])
+    #v.append(essay.get(None, 0))#incorrect spellings
+    #v.append(sum(i for _, i in essay.items())) #length of essay in words
+    return v
 
-def cos_dissimilarity(a, b):
-    m1 = math.sqrt(sum(i * i for i in a))
-    m2 = math.sqrt(sum(i * i for i in b))
-    return -sum(i * j for i, j in zip(a, b)) / (m1 * m2)
-
-def vectorize(essay, bagofwords):
-    return [essay.get(i, 0) for i in bagofwords]
+def essaytodict(essay):
+    dct = {}
+    for j in essay:
+        dct[j] = dct.get(j, 0) + 1
+    return dct
 
 def main():
     from openpyxl import load_workbook
@@ -90,14 +61,12 @@ def main():
     score = data[6][1:]
     cp = loadspellcorrector()#spell corrector
     #correct minor spell errors using spell corrector
-    essay = [[cp.best_word(j) for j in i] for i in essay]
-    ns = []
-    for i in essay:
-        dct = {}
-        for j in i:
-            dct[j] = dct.get(j, 0) + 1
-        ns.append(dct)
-    essay = ns
+    allwords = set(j for i in essay for j in i)
+    bword = {}
+    for i in allwords:
+        bword[i] = cp.best_word(i)
+    essay = [[bword[j] for j in i] for i in essay]
+    essay = [essaytodict(i) for i in essay]
 #total essays 1783
     train_len = 1700 #training set size
     train_essay = essay[:train_len]
@@ -105,26 +74,58 @@ def main():
     test_essay = essay[train_len:]
     test_score = score[train_len:]
     bagofwords = set()
-
+    docfreq = {}
     for i in train_essay:
         for j in i:
             if j != None: #None is a major spell error
                 bagofwords.add(j)
-    
+                docfreq[j] = docfreq.get(j, 0) + 1
     bagofwords = list(bagofwords) #dimension
-    train_vectors = [vectorize(i, bagofwords) for i in train_essay]
-    test_vectors = [vectorize(i, bagofwords) for i in test_essay]
-    
-    for test, score in zip(test_vectors, test_score):
-        mindist = 1e15
-        bstcls = -1
-        print('classify')
-        for d, s in zip(train_vectors, train_score):
-            dist = euc_dissimilarity(d, test)
-            if dist < mindist:
-                bstcls = s
-                mindist = dist
-        print(score, ' classified as ', bstcls)
+    idf_v = []#idf vector
+    stopwords = []
+    newbag = []
+    for i in bagofwords:
+        idf = math.log(train_len / (1 + docfreq[i]))
+        idf_v.append(idf)
+        if idf < 1:
+            stopwords.append(i)
+        else:
+            newbag.append(i)
+    #bagofwords = newbag #eliminate stop words calculated earlier ?
 
+    print('dimensions', len(bagofwords))
+    train_vectors = [vectorize(i, bagofwords, idf_v) for i in train_essay]
+    test_vectors = [vectorize(i, bagofwords, idf_v) for i in test_essay]
+    clf = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
+    print('training svm')
+    clf.fit(train_vectors, train_score)
+    print('finished svm')
+    #FOR TESTING OUR OWN SVM
+    #model2 = MSVM(list(zip(train_vectors, train_score)))
+    #print('finishedmsvm')
+    #model2.evaluate_on_train_data()
+    print('training set fit', clf.score(train_vectors, train_score))
+    print('test set fit', clf.score(test_vectors, test_score))
+    p = clf.predict(test_vectors)
+    dc = {}
+    count = {}
+    for i, prd in enumerate(p):
+        sc = test_score[i]
+        count[sc] = count.get(sc, 0) + 1
+        if sc not in dc:
+            dc[sc] = {}
+        dc[sc][prd] = dc[sc].get(prd, 0) + 1
+
+    for k, v in dc.items():
+        for a, b in v.items():
+            print(b, "/", count[k], "CLASS", k, "classed as", a)
+    
+    while True:
+        s = input('Write an essay\n')
+        s = process(s.split())
+        s = [cp.best_word(i) for i in s]
+        s = essaytodict(s)
+        s = vectorize(s, bagofwords, idf_v)
+        print(clf.predict([s]))
 
 main()
