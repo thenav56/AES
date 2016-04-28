@@ -3,10 +3,11 @@ import numpy as np
 
 class BSVM:
 
-    def __init__(self, data, target):
-        self.data = data
-        self.target = target
-        self.build()
+    def __init__(self):
+        self.data = None
+        self.target = None
+        self.alpha = None
+        self.b = None
 
     def kernel(self, a, b):
         return np.dot(a, b)
@@ -19,9 +20,11 @@ class BSVM:
                 r += self.alpha[i] * self.target[i] * self.kernel(self.data[i], x)
         return 1 if r - self.b >= 0 else -1
 
-    def build(self):
-        test = ctypes.CDLL("./smo/lsmo.so")
+    def train(self, data, target):
+        self.data = data
+        self.target = target
 
+        test = ctypes.CDLL("./smo/lsmo.so")
         #FUNCTION PARAMETERS
         test.solve.argtypes = [
             ctypes.POINTER(ctypes.c_float), 
@@ -48,3 +51,13 @@ class BSVM:
 
         self.alpha = [i for i in alpha]
         #print(self.alpha)
+
+    def score(self, data, target, pr = False):
+        r = 0
+        for i, d in enumerate(data):
+            cr = self.classify(d)
+            r += target[i] == cr
+            if pr:
+                print('running', r / (i + 1))
+        return r / len(data)
+

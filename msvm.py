@@ -6,6 +6,7 @@ from bsvm import BSVM
 from scipy import optimize
 import matplotlib.pyplot as plt
 from random import shuffle
+import pickle
 
 # HOW TO USE?
 # model = MSVM(dataset)
@@ -52,7 +53,6 @@ class MSVM:
         classes = set(i for _, i in self.dataset)
         classes = [i for i in classes]#convert above to array
         self.classes = classes
-        print(self.classes)
         dict_cls = {}
         for i in classes:
             dict_cls[i] = []
@@ -71,7 +71,8 @@ class MSVM:
                     r = d1 + d2;
                     d = [self.dataset[i][0] for i in r]
                     t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
-                    model = BSVM(d, t)
+                    model = BSVM()
+                    model.train(d, t)
                     self.bsvms.append([cl1, cl2, model])
 
     def score(self, data, target, pr = False):
