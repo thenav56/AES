@@ -7,7 +7,7 @@ def Readfile(filename):
     file = open(filename, "r", encoding="latin-1")
     for line in file:
         ngram = line.split()
-        del ngram[0]
+        del ngram[0] #first word is count of bigram or trigram
         vocabulary.append(ngram)
     return vocabulary
 
@@ -18,8 +18,12 @@ class Preprocess:
         self.unigram = []
         self.bigram = []
         self.trigram = []
+        self.rawwords = []
         self.words = []
+        self.stopwords = []
+        self.importSW("stopwords.txt")
         self.Getwords()
+
 
     def Getwords(self):
         sent = self.text.lower().split(".")
@@ -27,10 +31,20 @@ class Preprocess:
         for i in range(len(sent)):
             line = sent[i].replace(",", "").replace("'", "")
             twords = line.split()
-            self.words.extend(twords)
+            self.rawwords.extend(twords)
             self.unigram.extend(self.GetNgram(twords, 1))
             self.bigram.extend(self.GetNgram(twords, 2))
             self.trigram.extend(self.GetNgram(twords, 3))
+        self.SWfilter()
+
+    def importSW(self, filename):
+        swtext = open(filename, "r", encoding="latin-1")
+        for line in swtext:
+            stwords = line.split()
+            for word in stwords:
+                if(word == "|"):
+                    break
+                self.stopwords.append(word)
 
 
     def GetNgram(self, twords, nval):
@@ -50,7 +64,11 @@ class Preprocess:
 
     def CountTrigram(self):
         return len(self.trigram)
-            
+
+    def SWfilter(self):
+        for i in range(len(self.rawwords)):
+            if self.rawwords[i] not in self.stopwords:
+                self.words.append(self.rawwords[i]) 
 
 
 def main(argv):
@@ -68,31 +86,11 @@ def main(argv):
     content = open(filename).read()
     sentence = Preprocess(content)
     
-    '''vocabulary = Readfile("3gram.txt")
-    tritree = Trie(3)
-    for ngram in vocabulary:
-        tritree.Insert(ngram)
-
-
-    print(sentence.words)
-    print(sentence.CountWords())
-    print(sentence.CountTrigram())
-    
-    hit = 0
-    miss = 0
-    for tri in sentence.trigram:
-        if(tritree.Search(tri)):
-            hit += 1
-        else:
-            miss += 1
-
-    print(hit," ", miss)
-'''
     vocabulary = Readfile("2gram.txt")
     bitree = Trie(2)
     for ngram in vocabulary:
         bitree.Insert(ngram)
-
+    
     print(sentence.words)
     print(sentence.CountBigram())
     hit = 0
