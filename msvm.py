@@ -1,11 +1,6 @@
 #!/usr/bin/python
 #multiclass SVM
-from math import *
-import numpy as np
 from bsvm import BSVM
-from scipy import optimize
-import matplotlib.pyplot as plt
-from random import shuffle
 import pickle
 
 # HOW TO USE?
