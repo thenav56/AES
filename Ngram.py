@@ -71,8 +71,8 @@ class Preprocess:
                 self.words.append(self.rawwords[i]) 
 
 
-def main(argv):
-    try:
+def main():
+    '''try:
         opts, args = getopt.getopt(argv,"hi:",["ifile="])
     except getopt.GetoptError:
         print('test.py -i <inputfile>')
@@ -82,8 +82,9 @@ def main(argv):
             print('test.py -i <inputfile>')
             sys.exit(2)
         if opt in ("-i", "--ifile"):
-            filename = arg
-    content = open(filename).read()
+            filename = arg '''
+
+    content = "This is where you put ur essay UTTAM. Hehahah soso skadjfj."  #open(filename).read()
     sentence = Preprocess(content)
     
     vocabulary = Readfile("2gram.txt")
@@ -92,7 +93,7 @@ def main(argv):
         bitree.Insert(ngram)
     
     print(sentence.words)
-    print(sentence.CountBigram())
+    print("These are the missed bigrams (errors)")
     hit = 0
     miss = 0
     for bi in sentence.bigram:
@@ -112,5 +113,6 @@ def main(argv):
     print Ngram.NgramList
 '''
 if __name__=="__main__":
-    main(sys.argv[1:])
+    main()
+    #main(sys.argv[1:])
 
