@@ -160,6 +160,14 @@ class cspell:
         queue = [string]
         q_dictionary = {}  # items other than string that we've checked
 
+        splits = [(string[:i], string[i:]) for i in range(len(string) + 1)]
+        transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b) > 1]
+        for transpose in transposes:
+            if transpose not in q_dictionary:
+                queue.append(transpose)
+                q_dictionary[transpose] = None
+                # arbitrary value,  just to identify we checked this
+
         while len(queue) > 0:
             q_item = queue[0]  # pop
             queue = queue[1:]
