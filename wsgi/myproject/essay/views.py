@@ -23,7 +23,6 @@ def register(request):
             train_file = request.FILES['train_file']
             essayModel = EssayModel(name=name, info=info,
                                     train_file=train_file)
-            print("here")
             essayModel.save()
             context = {
                     'flash': True,
