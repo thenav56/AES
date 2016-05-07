@@ -19,6 +19,7 @@ setup(
     install_requires=[
         'Django==1.9.2',
         # 'django-filter==0.12.0',
+        'MySQL-python',
         # 'djangorestframework==3.3.2',
         # 'et-xmlfile==1.0.1',
         # 'jdcal==1.2',
