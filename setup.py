@@ -24,10 +24,10 @@ setup(
         # 'jdcal==1.2',
         # 'Markdown==2.6.5',
         'mysqlclient==1.3.7',
-        'numpy==1.11.0',
+        # 'numpy==1.11.0',
         'openpyxl==2.3.5',
-        'scikit-learn==0.17.1',
-        'scipy==0.17.0'
+        # 'scikit-learn==0.17.1',
+        # 'scipy==0.17.0'
     ],
     dependency_links=[
         'https://pypi.python.org/simple/django/'
