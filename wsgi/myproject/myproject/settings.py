@@ -88,7 +88,7 @@ if on_openshift:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-            'NAME':     'django',
+            'NAME':     os.environ['OPENSHIFT_MYSQL_DB_NAME'],
             'USER':     os.environ['OPENSHIFT_MYSQL_DB_USERNAME'],
             'PASSWORD': os.environ['OPENSHIFT_MYSQL_DB_PASSWORD'],
             'HOST':     os.environ['OPENSHIFT_MYSQL_DB_HOST'],
