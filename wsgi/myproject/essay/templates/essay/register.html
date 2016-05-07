@@ -1,0 +1,64 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <title>Aes | Register</title>
+    </head>
+    <body>
+        <div class="container">
+           <form class="form-horizontal" role="form" method="POST" action="">{% csrf_token %}
+               <legend>Register Essay Module</legend>
+               {% if flash == True %}
+               {% if success == True %}
+               <div class="alert alert-success">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     <strong>Success!</strong> Registered and Trained Successfully
+               </div>
+               {% elif success == False %}
+               <div class="alert alert-danger">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     <strong>Failed!</strong> Error in Registering or Training ! Please try again
+               </div>
+               {% endif %}
+               {% endif %}
+               <div class="form-group">
+                   <label class="control-label col-sm-2" for="name">Name: </label>
+                   <div class="col-sm-8">
+                   <input class="form-control" type="text" name="name" placeholder="Name of Essay Module"></input>
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label col-sm-2" for="info">Info: </label>
+                   <div class="col-sm-8">
+                   <textarea class="form-control" type="text" name="info" placeholder="Info about the Essay Module"></textarea>
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label col-sm-2" for="train_file">Training Data: </label>
+                   <div class="col-sm-8">
+                   <input  type="file" name="train_file"></input>
+                   </div>
+               </div>
+               <div class="col-sm-offset-2 col-sm-10">
+               <button type="submit" class="btn btn-success">Submit</button>
+               </div>
+            </form>
+
+            <!--<form action="" method="post" enctype="multipart/form-data">-->
+                <!--{% csrf_token %}-->
+                <!--<p>{{ form.non_field_errors }}</p>-->
+                <!--<p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>-->
+                <!--<p>-->
+                    <!--{{ form.docfile.errors }}-->
+                    <!--{{ form.docfile }}-->
+                <!--</p>-->
+                <!--<p><input type="submit" value="Upload" /></p>-->
+            <!--</form>-->
+
+        </div>
+    </body>
+</html>

@@ -1,0 +1,39 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <title>Aes | Evalute</title>
+    </head>
+    <body>
+        <div class="container">
+            <legend>{{ essayModel.name }}</legend>
+            <ul>
+                <li>Essay Model Created Date: {{ essayModel.created }}</li>
+                <li>Essay Model Info: {{ essayModel.info }}</li>
+            </ul>
+           <form class="form-horizontal" role="form" method="POST" action="">{% csrf_token %}
+               <legend>Evalute essay</legend>
+               {% if flash == True %}
+               <div class="alert {{alert}}">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     <strong>{{scored_position}}</strong> You Have Scored Marks of : {{marks_scored}}
+               </div>
+               {% endif %}
+               <div class="form-group">
+                   <label class="control-label col-sm-2" for="essay_text">Write Essay Here : </label>
+                   <div class="col-sm-8">
+                       <textarea class="form-control" rows="15" {{autofocus}} required="true" style="resize:none" type="text" name="essay_text" placeholder="Write Essay Here">{{ essay_text}}</textarea>
+                   </div>
+               </div>
+               <div class="col-sm-offset-2 col-sm-10">
+               <button type="submit" class="btn btn-success">Submit</button>
+               </div>
+            </form>
+        </div>
+    </body>
+</html>
+
