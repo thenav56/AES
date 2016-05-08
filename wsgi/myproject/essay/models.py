@@ -19,6 +19,7 @@ class EssayModel(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     train_file = models.FileField(upload_to=get_File_Name)
     model_file = models.CharField(max_length=215, blank=True)
+    train_len = models.IntegerField()
 
     def __str__(self):
         return str(self.id)+': '+self.name
@@ -62,7 +63,7 @@ def generate_model(sender, **kwargs):
         data = list(zip(*data))
         essay = data[2][1:]
         score = data[6][1:]
-        train_len = 2000  # training set size
+        train_len = kwargs['instance'].train_len  # training set size
         train_essay = essay[:train_len]
         train_score = score[:train_len]
         test_essay = essay[train_len:]

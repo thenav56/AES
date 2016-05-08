@@ -21,8 +21,9 @@ def register(request):
             name = request.POST.get('name')
             info = request.POST.get('info')
             train_file = request.FILES['train_file']
+            train_len = request.POST.get('train_len')
             essayModel = EssayModel(name=name, info=info,
-                                    train_file=train_file)
+                                    train_file=train_file, train_len=train_len)
             essayModel.save()
             context = {
                     'flash': True,
@@ -45,12 +46,7 @@ def view(request, essayModel_id):
                 }
         if request.method == 'POST':
             essay_text = request.POST.get('essay_text')
-            import sys
-            from django.conf import settings
-            sys.path.append(settings.BASE_DIR+'/classifier/')
-            from model import load_from_file
-            model = load_from_file(settings.MEDIA_ROOT+'/train_file/'+essayModel.name+'/'+essayModel.model_file+'/'+essayModel.name)
-            t = model.predict([essay_text.split()])[0]
+            t = essayModel.evalute(essay_text)
             alert = "alert-success" if t >= 4.8 else "alert-warning"
             scored_position = "Nice Work" if t >= 4.8 else "Need More Effort"
             context.update({
