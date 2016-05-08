@@ -33,7 +33,7 @@ class EssayModel(models.Model):
         # return super(EssayModel, self).save(*args, **kwargs)
     def evalute(self, essay_text):
         from model import load_from_file
-        model = load_from_file(settings.MEDIA_ROOT+'/train_file/'+self.name+'/'+essayModel.model_file+'/'+essayModel.name)
+        model = load_from_file(settings.MEDIA_ROOT+'/model_file/'+self.name+'/'+self.model_file+'/'+self.name)
         t = model.predict([essay_text.split()])[0]
         return t
 
@@ -49,13 +49,14 @@ def generate_model(sender, **kwargs):
         except EssayModel.DoesNotExist:
             update = True
     if update:
-        kwargs['instance'].model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)+'/'
+        kwargs['instance'].model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)
         from model import EssayModel as esyModel
         from openpyxl import load_workbook
         import os
         os.chdir(settings.BASE_DIR+'/essay/classifier/')
         file_location = kwargs['instance'].train_file
-        model_directory = settings.MEDIA_ROOT+'/train_file/'+kwargs['instance'].name
+        model_directory =
+        settings.MEDIA_ROOT+'/model_file/'+kwargs['instance'].name.lower()
         model_name = kwargs['instance'].model_file
         wb = load_workbook(file_location)
         ws = wb.active
@@ -75,5 +76,5 @@ def generate_model(sender, **kwargs):
         model.train(train_essay, train_score)
         if not os.path.exists(model_directory+'/'+model_name):
             os.makedirs(model_directory+'/'+model_name)
-        model.dump(model_directory+'/'+model_name+kwargs['instance'].name.lower())
+        model.dump(model_directory+'/'+model_name+'/'+kwargs['instance'].name.lower())
         print("Model dumped\n")
