@@ -17,23 +17,21 @@ def register(request):
     if request.method == 'GET':
         return render(request, 'essay/register.html')
     elif request.method == 'POST':
-        try:
-            name = request.POST.get('name')
-            info = request.POST.get('info')
-            train_file = request.FILES['train_file']
-            train_len = request.POST.get('train_len')
-            essayModel = EssayModel(name=name, info=info,
-                                    train_file=train_file, train_len=train_len)
-            essayModel.save()
-            context = {
-                    'flash': True,
-                    'success': True
-                    }
-        except:
-            context = {
-                    'flash': True,
-                    'success': False
-                    }
+        name = request.POST.get('name')
+        info = request.POST.get('info')
+        train_file = request.FILES['train_file']
+        train_len = request.POST.get('train_len')
+        essayModel = EssayModel(name=name, info=info,
+                                train_file=train_file, train_len=train_len)
+        essayModel.save()
+        context = {
+                'flash': True,
+                'success': True
+                }
+        # context = {
+                # 'flash': True,
+                # 'success': False
+                # }
         return render(request, 'essay/register.html', context)
 
 
