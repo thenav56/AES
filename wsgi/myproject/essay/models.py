@@ -13,8 +13,6 @@ def get_File_Name(self, filename):
         return 'train_file/'+self.name.lower()+'/'+str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)+'/'+filename
 
 
-
-
 class EssayModel(models.Model):
     name = models.CharField(max_length=200, unique=True)
     info = models.CharField(max_length=400)
@@ -32,6 +30,11 @@ class EssayModel(models.Model):
     # def save(self, *args, **kwargs):
         # self.generate_model()
         # return super(EssayModel, self).save(*args, **kwargs)
+    def evalute(self, essay_text):
+        from model import load_from_file
+        model = load_from_file(settings.MEDIA_ROOT+'/train_file/'+self.name+'/'+essayModel.model_file+'/'+essayModel.name)
+        t = model.predict([essay_text.split()])[0]
+        return t
 
 
 @receiver(pre_save, sender=EssayModel)
@@ -51,7 +54,7 @@ def generate_model(sender, **kwargs):
         import os
         os.chdir(settings.BASE_DIR+'/essay/classifier/')
         file_location = kwargs['instance'].train_file
-        model_directory = settings.BASE_DIR+'/media/train_file/'+kwargs['instance'].name
+        model_directory = settings.MEDIA_ROOT+'/train_file/'+kwargs['instance'].name
         model_name = kwargs['instance'].model_file
         wb = load_workbook(file_location)
         ws = wb.active

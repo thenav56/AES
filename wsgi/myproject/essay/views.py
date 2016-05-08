@@ -49,7 +49,7 @@ def view(request, essayModel_id):
             from django.conf import settings
             sys.path.append(settings.BASE_DIR+'/classifier/')
             from model import load_from_file
-            model = load_from_file(settings.BASE_DIR+'/media/train_file/'+essayModel.name+'/'+essayModel.model_file+'/'+essayModel.name)
+            model = load_from_file(settings.MEDIA_ROOT+'/train_file/'+essayModel.name+'/'+essayModel.model_file+'/'+essayModel.name)
             t = model.predict([essay_text.split()])[0]
             alert = "alert-success" if t >= 4.8 else "alert-warning"
             scored_position = "Nice Work" if t >= 4.8 else "Need More Effort"
