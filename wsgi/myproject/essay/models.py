@@ -6,10 +6,10 @@ import datetime
 import sys
 
 sys.path.append(settings.BASE_DIR+'/essay/classifier')
-now = datetime.datetime.now()
 
 
 def get_File_Name(self, filename):
+        now = datetime.datetime.now()
         return 'train_file/'+self.name.lower()+'/'+str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)+'/'+filename
 
 
@@ -49,14 +49,14 @@ def generate_model(sender, **kwargs):
         except EssayModel.DoesNotExist:
             update = True
     if update:
+        now = datetime.datetime.now()
         kwargs['instance'].model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)
         from model import EssayModel as esyModel
         from openpyxl import load_workbook
         import os
         os.chdir(settings.BASE_DIR+'/essay/classifier/')
         file_location = kwargs['instance'].train_file
-        model_directory =
-        settings.MEDIA_ROOT+'/model_file/'+kwargs['instance'].name.lower()
+        model_directory = settings.MEDIA_ROOT+'/model_file/'+kwargs['instance'].name.lower()
         model_name = kwargs['instance'].model_file
         wb = load_workbook(file_location)
         ws = wb.active
