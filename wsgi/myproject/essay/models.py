@@ -63,7 +63,7 @@ def generate_model(sender, **kwargs):
         data = list(zip(*data))
         essay = data[2][1:]
         score = data[6][1:]
-        train_len = kwargs['instance'].train_len.to_python  # training set size
+        train_len = int(kwargs['instance'].train_len)  # training set size
         train_essay = essay[:train_len]
         train_score = score[:train_len]
         test_essay = essay[train_len:]
