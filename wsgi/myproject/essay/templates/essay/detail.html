@@ -14,6 +14,7 @@
             <ul>
                 <li>Essay Model Created Date: {{ essayModel.created }}</li>
                 <li>Essay Model Info: {{ essayModel.info }}</li>
+                <li>Essay Model Train Length: {{ essayModel.train_len }}</li>
             </ul>
            <form class="form-horizontal" role="form" method="POST" action="">{% csrf_token %}
                <legend>Evalute essay</legend>
