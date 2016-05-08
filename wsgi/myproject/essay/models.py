@@ -33,7 +33,8 @@ class EssayModel(models.Model):
         # return super(EssayModel, self).save(*args, **kwargs)
     def evalute(self, essay_text):
         from model import load_from_file
-        model = load_from_file(settings.MEDIA_ROOT+'/model_file/'+self.name+'/'+self.model_file+'/'+self.name)
+        name = self.name.lower()
+        model = load_from_file(settings.MEDIA_ROOT+'/model_file/'+name+'/'+self.model_file+'/'+name)
         t = model.predict([essay_text.split()])[0]
         return t
 
