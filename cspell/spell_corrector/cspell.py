@@ -323,10 +323,10 @@ class cspell:
                         if printlist:
                             print("In line %i,  the word < %s > was not found (no suggested correction)" % (i, doc_word))
                             unknown_word_count += 1
-                        elif suggestion[0]!=doc_word:
-                            if printlist:
-                                print("In line %i,  %s: suggested correction is < %s >" % (i, doc_word, suggestion[0]))
-                                corrected_word_count += 1
+                    elif suggestion[0]!=doc_word:
+                        if printlist:
+                            print("In line %i,  %s: suggested correction is < %s >" % (i, doc_word, suggestion[0]))
+                            corrected_word_count += 1
 
         print("-----")
         print("total words checked: %i" % doc_word_count)
