@@ -28,13 +28,11 @@ if 'OPENSHIFT_APP_NAME' in os.environ:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-if on_openshift:
-    DEBUG = False
 
 # if on_openshift:
     # DEBUG = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = []
 
 
 # Application definition
