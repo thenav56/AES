@@ -25,12 +25,14 @@ def train_scheduled_job():
             cronjob.train()
     except IndexError:
         print("Empty queue")
+        import time
+        time.sleep(10)
 
 if __name__ == "__main__":
     import fcntl
-    try:
-        f = open('.corn.lock', 'w')
-        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        train_scheduled_job()
-    except IOError:
-        print("Another Instance is already working")
+    # try:
+    f = open('.corn.lock', 'w')
+    fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    train_scheduled_job()
+    # except IOError:
+        # print("Another Instance is already working")
