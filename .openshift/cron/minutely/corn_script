@@ -3,7 +3,7 @@
 echo "************ NoHup Cronny Started ***************"
 #date >> ${OPENSHIFT_DATA_DIR}essay_train-start.log
 
-nohup ${OPENSHIFT_REPO_DIR}/.openshift/cron_nohup/minutely/train_cron.sh < /dev/null &>> ${OPENSHIFT_LOG_DIR}/cron_daily_nohup.log &
+nohup ${OPENSHIFT_REPO_DIR}/.openshift/cron_nohup/minutely/train_cron.sh > /dev/null &>> ${OPENSHIFT_LOG_DIR}/cron_daily_nohup.log &
 
 echo "************ NoHup Cronny Executed ***************"
 #date >> ${OPENSHIFT_DATA_DIR}essay_train-end.log
