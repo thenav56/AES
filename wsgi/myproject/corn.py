@@ -1,8 +1,8 @@
+import os
 
 
 def train_scheduled_job():
     import django
-    import os
     import sys
 
     on_openshift = False
@@ -25,14 +25,13 @@ def train_scheduled_job():
             cronjob.train()
     except IndexError:
         print("Empty queue")
-        import time
-        time.sleep(10)
 
 if __name__ == "__main__":
     import fcntl
-    # try:
-    f = open('.corn.lock', 'w')
-    fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    train_scheduled_job()
-    # except IOError:
-        # print("Another Instance is already working")
+    try:
+        lock_file = os.path.join(os.environ['OPENSHIFT_TMP_DIR'], 'corn.lock')
+        f = open(lock_file, 'w')
+        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        train_scheduled_job()
+    except IOError:
+        print("Another Instance is already working")
