@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "************ Cronny Started ***************"
+echo "************ NoHup Cronny Started ***************"
 #date >> ${OPENSHIFT_DATA_DIR}essay_train-start.log
 
-python ${OPENSHIFT_REPO_DIR}wsgi/myproject/corn.py
+nohup ${OPENSHIFT_REPO_DIR}/.openshift/cron_nohup/minutely/train_cron.sh < /dev/null &>> ${OPENSHIFT_LOG_DIR}/cron_daily_nohup.log &
 
-echo "************ Cronny Executed ***************"
+echo "************ NoHup Cronny Executed ***************"
 #date >> ${OPENSHIFT_DATA_DIR}essay_train-end.log
