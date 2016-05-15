@@ -6,3 +6,5 @@
 .ropeproject/
 .project
 .pydevproject
+wsgi/myproject/media
+wsgi/myproject/*/migrations

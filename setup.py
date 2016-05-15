@@ -24,8 +24,9 @@ setup(
         # 'jdcal==1.2',
         # 'Markdown==2.6.5',
         # 'mysqlclient==1.3.7',
+        'django-rq==0.9.0',
         # 'numpy==1.11.0',
-        'openpyxl',
+        # 'openpyxl',
         # 'scikit-learn==0.17.1',
         # 'scipy==0.17.0'
     ],

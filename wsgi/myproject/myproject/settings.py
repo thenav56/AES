@@ -28,6 +28,8 @@ if 'OPENSHIFT_APP_NAME' in os.environ:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+if on_openshift:
+    DEBUG = False
 
 # if on_openshift:
     # DEBUG = False
@@ -138,8 +140,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+
 # Media Root and Url
-MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
+if on_openshift:
+    MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)

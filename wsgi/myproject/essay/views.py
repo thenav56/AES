@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 
-from .models import EssayModel
+from .models import EssayModel, CronJob
 # from .forms import DocumentForm
 
 
@@ -38,9 +38,12 @@ def register(request):
 def view(request, essayModel_id):
     try:
         essayModel = EssayModel.objects.get(pk=essayModel_id)
+        cronjob = CronJob.objects.get(essaymodel=essayModel)
+        cronjobStatus = cronjob.getStatus()
         context = {
                 'essayModel': essayModel,
-                'autofocus': 'autofocus'
+                'autofocus': 'autofocus',
+                'cronjobStatus': cronjobStatus
                 }
         if request.method == 'POST':
             essay_text = request.POST.get('essay_text')
