@@ -8,4 +8,4 @@
 .pydevproject
 wsgi/myproject/media
 wsgi/myproject/*/migrations
-corn.lock
+.corn.lock

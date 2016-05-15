@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "************ Cronny Started ***************"
+date >> ${OPENSHIFT_DATA_DIR}/essay_train-start.log
+
+source ${OPENSHIFT_HOMEDIR}/python/virtenv/bin/activate
+python ${OPENSHIFT_REPO_DIR}/wsgi/myproject/cron.py
+
+echo "************ Cronny Executed ***************"
+date >> ${OPENSHIFT_DATA_DIR}/essay_train-end.log
