@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "************ Cronny Started ***************"
+echo "************ Cronny Started ( NoHup ) ***************"
 
-python ${OPENSHIFT_REPO_DIR}wsgi/myproject/corn.py
+python ${OPENSHIFT_REPO_DIR}wsgi/myproject/cron.py
 
-echo "************ Cronny Executed ***************"
+echo "************ Cronny Executed ( NoHup ) ***************"
