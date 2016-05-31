@@ -150,7 +150,7 @@ class CentralWidget(QtGui.QWidget):
         self.file = file
         self.text_essay = QtGui.QTextEdit()
         self.initUI(file)
-        from .classifier.model import load_from_file
+        from classifier.model import load_from_file
         self.model = load_from_file(self.file)
 
     def initUI(self, file):
