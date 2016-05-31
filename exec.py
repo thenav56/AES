@@ -4,15 +4,16 @@ from model import EssayModel
 from model import load_from_file
 import time
 
+
 def main():
     from openpyxl import load_workbook
-    wb = load_workbook('train2.xlsx')
+    wb = load_workbook('train.xlsx')
     ws = wb.active
     data = [[j.value for j in i] for i in ws]
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 200 #training set size
+    train_len = 200  # training set size
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]

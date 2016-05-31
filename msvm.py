@@ -1,7 +1,7 @@
 #!/usr/bin/python
-#multiclass SVM
-from bsvm import BSVM
-import pickle
+# multiclass SVM
+from .bsvm import BSVM
+# import pickle
 
 # HOW TO USE?
 # model = MSVM(dataset)
@@ -14,14 +14,16 @@ import pickle
 # Just call model.classify(features_list)
 # where features_list is an array of features
 
+
 class MSVM:
 
-    def __init__(self, dataset, C = 10):
+    def __init__(self, dataset, C=10):
         self.dataset = dataset
         self.C = C
         self.support_vectors = None
         self.classes = None
-        self.bsvms = None # 3-tuple (class corresponding to +ve class, cls corr -ve, binarysvm)
+        # 3-tuple (class corresponding to +ve class, cls corr -ve, binarysvm)
+        self.bsvms = None
         self.build()
 
     def classify(self, data):
@@ -38,15 +40,15 @@ class MSVM:
             else:
                 votes[cl2][0] += 1
                 votes[cl2][1] -= r
-        #mv = max(self.classes, key = lambda cl: votes[cl]) #xXx
-        #for i in votes:
+        # mv = max(self.classes, key = lambda cl: votes[cl]) #xXx
+        # for i in votes:
         #    if votes[mv] == votes[i]:
         #        print('A')
-        return max(self.classes, key = lambda cl: votes[cl]) #xXx
+        return max(self.classes, key=lambda cl: votes[cl])  # xXx
 
     def build(self):
         classes = set(i for _, i in self.dataset)
-        classes = [i for i in classes]#convert above to array
+        classes = [i for i in classes]  # convert above to array
         self.classes = classes
         dict_cls = {}
         for i in classes:
@@ -59,18 +61,18 @@ class MSVM:
             self.bsvms = []
             for i in range(len(classes)):
                 for j in range(i + 1, len(classes)):
-                    cl1 = classes[i]#+ve class
-                    cl2 = classes[j]#-ve class
+                    cl1 = classes[i]  # +ve class
+                    cl2 = classes[j]  # -ve class
                     d1 = dict_cls[cl1]
                     d2 = dict_cls[cl2]
-                    r = d1 + d2;
+                    r = d1 + d2
                     d = [self.dataset[i][0] for i in r]
                     t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
                     model = BSVM()
                     model.train(d, t)
                     self.bsvms.append([cl1, cl2, model])
 
-    def score(self, data, target, pr = False):
+    def score(self, data, target, pr=False):
         r = 0
         for i, d in enumerate(data):
             cr = self.classify(d)
@@ -78,6 +80,7 @@ class MSVM:
             if pr:
                 print('running', r / (i + 1))
         return r / len(data)
+
 
 def main():
     pass
