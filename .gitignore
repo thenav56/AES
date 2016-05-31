@@ -8,3 +8,5 @@ pip-selfcheck.json
 __pycache__/
 .ropeproject/
 local
+model/*
+cache_dict.csv
