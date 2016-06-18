@@ -1,28 +1,28 @@
 #!/usr/bin/env python
 import os
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 BASE_DIR = os.getcwd()
 
 
-class About(QtGui.QWidget):
+class About(QtWidgets.QWidget):
 
     def __init__(self):
         super(About, self).__init__()
         self.initUI()
 
     def initUI(self):
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         about_file = open('about.html', 'r')
         about_content = about_file.read()
-        content = QtGui.QLabel(about_content)
+        content = QtWidgets.QLabel(about_content)
         content.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         layout.addWidget(content)
 
 
-class TrainDialog(QtGui.QWidget):
+class TrainDialog(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(TrainDialog, self).__init__(parent)
@@ -30,32 +30,32 @@ class TrainDialog(QtGui.QWidget):
         self.train_len = None
         self.filename = None
 
-        self.progress_log = QtGui.QTextEdit()
-        self.model_name_edit = QtGui.QLineEdit()
-        self.train_len_edit = QtGui.QLineEdit()
-        self.progress = QtGui.QProgressBar(self)
+        self.progress_log = QtWidgets.QTextEdit()
+        self.model_name_edit = QtWidgets.QLineEdit()
+        self.train_len_edit = QtWidgets.QLineEdit()
+        self.progress = QtWidgets.QProgressBar(self)
 
         self.initUI()
 
     def initUI(self):
-        model_name = QtGui.QLabel('Model Name')
-        train_len = QtGui.QLabel('Train Size')
-        filename = QtGui.QLabel('File Path')
+        model_name = QtWidgets.QLabel('Model Name')
+        train_len = QtWidgets.QLabel('Train Size')
+        filename = QtWidgets.QLabel('File Path')
 
         self.model_name_edit.setPlaceholderText("Write Model Name " +
                                                 "Ex: Computer")
         self.train_len_edit.setPlaceholderText("Write Train Size Ex: 200")
         self.progress_log.setReadOnly(True)
 
-        btn_filename = QtGui.QPushButton('Select', self)
-        btn_submit = QtGui.QPushButton('Submit', self)
-        btn_close = QtGui.QPushButton('Close', self)
+        btn_filename = QtWidgets.QPushButton('Select', self)
+        btn_submit = QtWidgets.QPushButton('Submit', self)
+        btn_close = QtWidgets.QPushButton('Close', self)
 
         btn_filename.clicked.connect(self.getFilename)
         btn_submit.clicked.connect(self.submit)
         btn_close.clicked.connect(self.close)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
 
         grid.addWidget(model_name, 1, 0)
@@ -78,8 +78,9 @@ class TrainDialog(QtGui.QWidget):
         self.show()
 
     def getFilename(self):
-        self.filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
-                                                          '/home')
+        self.filename, filetype = QtWidgets.QFileDialog.getOpenFileName(
+                                  self, 'Open file',
+                                  '/home')
 
     def submit(self):
         self.progress.setValue(10)
@@ -143,22 +144,22 @@ class TrainDialog(QtGui.QWidget):
         self.progress.setValue(100)
 
 
-class CentralWidget(QtGui.QWidget):
+class CentralWidget(QtWidgets.QWidget):
 
     def __init__(self, file):
         super(CentralWidget, self).__init__()
         self.file = file
-        self.text_essay = QtGui.QTextEdit()
+        self.text_essay = QtWidgets.QTextEdit()
         self.initUI(file)
         from classifier.model import load_from_file
         self.model = load_from_file(self.file)
 
     def initUI(self, file):
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
         self.setLayout(grid)
 
-        btn_submit = QtGui.QPushButton('Submit')
+        btn_submit = QtWidgets.QPushButton('Submit')
 
         btn_submit.clicked.connect(self.submit)
         self.text_essay.setText("Write Essay Here")
@@ -167,7 +168,7 @@ class CentralWidget(QtGui.QWidget):
         grid.addWidget(btn_submit, 2, 0)
 
     def showDialog(self, mark):
-        msgBox = QtGui.QMessageBox()
+        msgBox = QtWidgets.QMessageBox()
         msgBox.setText("Your Marks is "+str(mark))
         msgBox.exec()
 
@@ -177,26 +178,29 @@ class CentralWidget(QtGui.QWidget):
         self.showDialog(t)
 
 
-class Window(QtGui.QMainWindow):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(Window, self).__init__()
         self.setGeometry(50, 50, 800, 600)
         self.setWindowTitle(" Automated Essay Grading ")
         self.setWindowIcon(QtGui.QIcon(BASE_DIR+'/icons/logo1.png'))
-        self.tab = QtGui.QTabWidget(self)
+        self.tab = QtWidgets.QTabWidget(self)
         self.tab.setTabsClosable(True)
         self.tab.tabCloseRequested.connect(self.close_handler)
         self.tab.addTab(About(), "About")
         self.initUI()
 
     def initUI(self):
-        btn_exit = QtGui.QAction(QtGui.QIcon(BASE_DIR+'/icons/close.png'),
-                                 '&Quit', self)
-        btn_loadModel = QtGui.QAction(QtGui.QIcon(BASE_DIR+'/icons/open.png'),
-                                      '&Load Model', self)
-        btn_trainModel = QtGui.QAction(QtGui.QIcon(BASE_DIR+'/icons/new.png'),
-                                       '&Train Model', self)
+        btn_exit = QtWidgets.QAction(QtGui.QIcon(
+                                     BASE_DIR+'/icons/close.png'),
+                                     '&Quit', self)
+        btn_loadModel = QtWidgets.QAction(QtGui.QIcon(
+                                          BASE_DIR+'/icons/open.png'),
+                                          '&Load Model', self)
+        btn_trainModel = QtWidgets.QAction(QtGui.QIcon(
+                                           BASE_DIR+'/icons/new.png'),
+                                           '&Train Model', self)
 
         btn_exit.setShortcut('Ctrl+Q')
         btn_loadModel.setShortcut('Ctrl+L')
@@ -229,8 +233,8 @@ class Window(QtGui.QMainWindow):
         self.tab.removeTab(index)
 
     def loadModel(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
-                                                  BASE_DIR+'/model')
+        fname, ftype = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file',
+                                                             BASE_DIR+'/model')
         if fname:
             centralWidget = CentralWidget(fname)
             self.tab.addTab(centralWidget,
@@ -243,6 +247,6 @@ class Window(QtGui.QMainWindow):
 
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     GUI = Window()
     sys.exit(app.exec_())
