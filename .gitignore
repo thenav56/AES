@@ -10,3 +10,4 @@ __pycache__/
 local
 model/*
 cache_dict.csv
+recent.json
