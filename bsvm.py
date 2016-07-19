@@ -16,14 +16,11 @@ class BSVM:
     def classify(self, x):
         r = 0
         for i in range(len(self.data)):
-            if self.alpha[i] > 0:
-                r += self.alpha[i] * self.target[i] * self.kernel(self.data[i], x)
+            r += self.alpha[i] * self.target[i] * self.kernel(self.data[i], x)
         return 1 if r - self.b >= 0 else -1
 
+    #self.data will contain only support vectors after the training
     def train(self, data, target):
-        self.data = data
-        self.target = target
-
         test = ctypes.CDLL("./smo/lsmo.so")
         #FUNCTION PARAMETERS
         test.solve.argtypes = [
@@ -39,18 +36,25 @@ class BSVM:
         test.solve.restype = ctypes.c_float
 
         #FLATTEN TRAINING SET
-        train_set = [j for i in self.data for j in i]
-        N = len(self.target)
-        numfeatures = len(self.data[0])
+        train_set = [j for i in data for j in i]
+        N = len(target)
+        numfeatures = len(data[0])
         
         train_c = (ctypes.c_float * len(train_set))(*train_set)
-        target_c = (ctypes.c_float * N)(*self.target)
-        alpha = (ctypes.c_float * N)(*self.target)
-        error_cache = (ctypes.c_float * N)(*self.target)
-        self.b = test.solve(train_c, target_c, alpha, error_cache, ctypes.c_int(N), ctypes.c_int(numfeatures))
+        target_c = (ctypes.c_float * N)(*target)
+        alpha = (ctypes.c_float * N)(*target)
+        error_cache = (ctypes.c_float * N)(*target)
 
-        self.alpha = [i for i in alpha]
-        #print(self.alpha)
+        self.b = test.solve(train_c, target_c, alpha, error_cache, ctypes.c_int(N), ctypes.c_int(numfeatures))
+        self.alpha = []
+        self.data = []
+        self.target = []
+        for i, j in enumerate(alpha):
+            if j > 0:
+                self.alpha.append(j)
+                self.data.append(data[i])
+                self.target.append(target[i])
+        print('org size', len(alpha), 'new size', len(self.alpha))
 
     def score(self, data, target, pr = False):
         r = 0

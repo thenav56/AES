@@ -34,8 +34,12 @@ def vectorize(essay, bagofwords, idf_vector):
         tf = essay.get(i, 0)
         #v.append(tf)
         v.append(tf * idf_vector[r])
-    v.append(essay.get(None, 0))#incorrect spellings
-    #v.append(sum(i for _, i in essay.items())) #length of essay in words
+    err = essay.get(None, 0)
+    for i in essay:
+        if i not in bagofwords:
+            err += essay[i]
+    v.append(err)#incorrect spellings
+    v.append(sum(i for _, i in essay.items())) #length of essay in words
     return v
 
 def essaytodict(essay):
@@ -44,6 +48,16 @@ def essaytodict(essay):
         dct[j] = dct.get(j, 0) + 1
     return dct
 
+def stopw(filename):
+    swtext = open(filename, "r", encoding="latin-1")
+    r = []
+    for line in swtext:
+        if line[-1] == '\n':
+            line = line[:-1]
+        r += line, 
+    return r
+
+        
 def main():
     from openpyxl import load_workbook
     wb = load_workbook('train.xlsx')
@@ -57,33 +71,34 @@ def main():
     cp = loadspellcorrector()#spell corrector
     #correct minor spell errors using spell corrector
     allwords = set(j for i in essay for j in i)
+    #stw = set(stopw('stop.txt'))
     bword = {}
-    for i in allwords:
+    bagofwords = set()
+    for i in allwords: 
         bword[i] = cp.best_word(i)
-        print(i, bword[i])
-        input()
-    essay = [[bword[j] for j in i] for i in essay]
+        if bword[i] != None:
+            bagofwords.add(bword[i])
+    bagofwords = list(bagofwords) #dimension
+    #essay = [[bword[j] for j in i] for i in essay]
     essay = [essaytodict(i) for i in essay]
 #total essays 1783
-    train_len = 1700 #training set size
+    import params
+    train_len = params.get() #training set size
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
     test_score = score[train_len:]
-    bagofwords = set()
     docfreq = {}
     for i in train_essay:
         for j in i:
             if j != None: #None is a major spell error
-                bagofwords.add(j)
                 docfreq[j] = docfreq.get(j, 0) + 1
-    bagofwords = list(bagofwords) #dimension
     print(len(allwords))
     idf_v = []#idf vector
     stopwords = []
     newbag = []
     for i in bagofwords:
-        idf = math.log(train_len / (1 + docfreq[i]))
+        idf = math.log(train_len / (1 + docfreq.get(i, 0)))
         idf_v.append(idf)
         if idf < 1:
             stopwords.append(i)
@@ -91,9 +106,6 @@ def main():
             newbag.append(i)
     #bagofwords = newbag #eliminate stop words calculated earlier ?
     print('dimensions', len(bagofwords))
-    input()
-    for i in bagofwords:
-        print(i)
     train_vectors = [vectorize(i, bagofwords, idf_v) for i in train_essay]
     test_vectors = [vectorize(i, bagofwords, idf_v) for i in test_essay]
     clf = svm.SVC(kernel = 'linear', decision_function_shape='ovo')

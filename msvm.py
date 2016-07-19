@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #multiclass SVM
 from bsvm import BSVM
+import numpy as np
 import pickle
 
 # HOW TO USE?
