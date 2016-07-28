@@ -5,9 +5,6 @@ from model import load_from_file
 import time
 
 def mlda(el):
-    #el = el[:20]
-    #el = ["hijack some pussy", "dog cat animal", "food tea jackie"]
-    #el = [i.split() for i in el]
     w = set()
     for i in el:
         for j in i:
@@ -43,13 +40,11 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 1250
+    train_len = 820
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
     test_score = score[train_len:]
-    train_essay = [i.split() for i in train_essay]
-    test_essay = [i.split() for i in test_essay]
     s = time.time()
     load = False
     sk = True
@@ -83,4 +78,7 @@ def main():
 #        for a, b in v.items():
 #            print(b, "/", count[k], "CLASS", k, "classed as", a)
 
+if __name__ == "__main__" and __package__ is None:
+    __package__ = "root"
+    
 main()
