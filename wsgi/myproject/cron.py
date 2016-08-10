@@ -1,13 +1,11 @@
 import os
+import time
+import datetime
 
 
-def train_scheduled_job():
+def train_scheduled_job(on_openshift):
     import django
     import sys
-
-    on_openshift = False
-    if 'OPENSHIFT_APP_NAME' in os.environ:
-        on_openshift = True
 
     if on_openshift:
         sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'],
@@ -20,8 +18,6 @@ def train_scheduled_job():
     try:
         cronjob = CronJob.objects.order_by('updated').filter(status='0')[0]
         if cronjob is not None:
-            import time
-            import datetime
             start_t = time.time()
             start_time = datetime.datetime.now()
             print("Train Job(pk=%s) for essayModel( %s )" % (cronjob.pk,
@@ -32,15 +28,27 @@ def train_scheduled_job():
             print("Total Time To Train: ", (end_t-start_t))
             print("Started At :", start_time)
             print("AND Ended At :", end_time)
+            return True
     except IndexError:
         print("Empty queue")
+        return False
 
 if __name__ == "__main__":
     import fcntl
-    try:
-        lock_file = os.path.join(os.environ['OPENSHIFT_TMP_DIR'], 'corn.lock')
-        f = open(lock_file, 'w')
-        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        train_scheduled_job()
-    except IOError:
-        print("Another Instance is already working")
+
+    on_openshift = False
+    if 'OPENSHIFT_APP_NAME' in os.environ:
+        on_openshift = True
+
+    if not on_openshift:
+        while 1:
+            if not train_scheduled_job(on_openshift):
+                time.sleep(5*60)
+    else:
+        try:
+            lock_file = os.path.join(os.environ['OPENSHIFT_TMP_DIR'], 'corn.lock')
+            f = open(lock_file, 'w')
+            fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            train_scheduled_job(on_openshift)
+        except IOError:
+            print("Another Instance is already working")
