@@ -9,3 +9,4 @@
 wsgi/myproject/media
 wsgi/myproject/*/migrations
 .corn.lock
+wsgi/myproject/env/

@@ -55,6 +55,11 @@ class CronJob(models.Model):
     status = models.CharField(max_length=1, choices=CRONSTATUS, default='0')
     updated = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return str(self.id)+': CornJob('\
+                +self.essaymodel.name+'[id:'+str(self.essaymodel.id)+'],'\
+                +self.get_status_display()+')'
+
     def getStatus(self):
         return self.CRONSTATUS[int(self.status)][1]
 

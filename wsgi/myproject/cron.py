@@ -49,6 +49,7 @@ if __name__ == "__main__":
             lock_file = os.path.join(os.environ['OPENSHIFT_TMP_DIR'], 'corn.lock')
             f = open(lock_file, 'w')
             fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            print("Starting Train Scheduled Job")
             train_scheduled_job(on_openshift)
         except IOError:
             print("Another Instance is already working")
