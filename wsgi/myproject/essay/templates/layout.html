@@ -36,7 +36,7 @@
               width:50%;
             }
 
-            {% assign nav_pills_color "#aaa" %}
+            {% assign nav_pills_color "#2196f3" %}
             .nav-pills > li.active > a, .nav-pills > li.active > a:focus {
                 background-color: {{nav_pills_color}};
             }
@@ -50,10 +50,10 @@
 
     <body>
 
-    {% assign panel_default "panel-default" %}
-    {% assign button_primary "btn-default" %}
+    {% assign panel_default "panel-primary" %}
+    {% assign button_primary "btn-primary" %}
      <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -75,6 +75,12 @@
                         <!--</ul>-->
                     <!--</li>-->
                 </ul>
+                <form class="navbar-form navbar-left" method="GET" action="{% url 'essay:search' %}" accept-charset="UTF-8" role="search">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Search" type="text" name="query" value="{{query}}">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                </form>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user.is_superuser %}
                     <li>

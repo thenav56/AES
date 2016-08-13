@@ -12,3 +12,4 @@ wsgi/myproject/*/migrations
 wsgi/myproject/env/
 wsgi/static/bower_components
 wsgi/myproject/db.sqlite3
+dump.json

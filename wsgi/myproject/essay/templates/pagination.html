@@ -1,7 +1,7 @@
 <div class="pagination">
     <span class="step-links">
         {% if objects.has_previous %}
-        <a href="?{{page_variable}}={{ objects.previous_page_number }}{{hash_tag}}">previous</a>
+        <a href="?{{previous_page_url}}{{hash_tag}}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -9,7 +9,7 @@
         </span>
 
         {% if objects.has_next %}
-        <a href="?{{page_variable}}={{ objects.next_page_number }}{{hash_tag}}">next</a>
+        <a href="?{{next_page_url}}{{hash_tag}}">next</a>
         {% endif %}
     </span>
 </div>

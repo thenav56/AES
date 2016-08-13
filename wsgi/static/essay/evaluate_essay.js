@@ -8,13 +8,23 @@ function evaluate_essay() {
 
         // handle a successful response
         success : function(json) {
-            show_form_response = `
-                <div class='text-center alert ${json.alert}'>
-                    <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                    <strong>${json.scored_message}</strong>
-                    You Have Scored Marks of : ${json.marks_scored}
-                </div>`;
-            //$('#essay-text').val(''); // remove the value from the input
+            show_form_response = ''
+            if (json.error != undefined){
+                show_form_response = `
+                    <div class='text-center alert alert-danger'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <strong>Error!</strong>
+                        ${json.error}
+                    </div>`;
+            }else{
+                show_form_response = `
+                    <div class='text-center alert ${json.alert}'>
+                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                        <strong>${json.scored_message}</strong>
+                        You Have Scored Marks of : ${json.marks_scored}
+                    </div>`;
+                //$('#essay-text').val(''); // remove the value from the input
+            }
             $("#show-form-response").append(show_form_response);
         },
 

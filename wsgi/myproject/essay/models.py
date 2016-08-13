@@ -25,7 +25,8 @@ class EssayModel(models.Model):
     train_file = models.FileField(upload_to=get_File_Name)
     model_file = models.CharField(max_length=215, blank=True)
     train_len = models.IntegerField()
-    train_file_updated = models.CharField(max_length=1, choices=update_status, default='1')
+    train_file_updated = models.CharField(max_length=1, choices=update_status,
+                                          default='1', blank=True)
 
     def __str__(self):
         return str(self.id)+': '+self.name
@@ -66,6 +67,8 @@ class CronJob(models.Model):
         return self.CRONSTATUS[int(self.status)][1]
 
     def train(self):
+        now = datetime.datetime.now()
+        self.model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)
         self.status = '1'
         self.save()
         # try:
@@ -108,18 +111,14 @@ class CronJob(models.Model):
 
 @receiver(pre_save, sender=EssayModel)
 def pre_generate_model(sender, **kwargs):
-    now = datetime.datetime.now()
     update = True
     essaymodel = kwargs['instance']
-    essaymodel.model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)
-    if essaymodel.pk is not None:
-        if essaymodel.train_file_updated != '1':
-            try:
-                orig = EssayModel.objects.get(pk=essaymodel.pk)
-                if orig.train_file == essaymodel.train_file:
-                    update = False
-            except EssayModel.DoesNotExist:
-                update = True
+    try:
+        orig = EssayModel.objects.get(pk=essaymodel.pk)
+        if orig.train_file == essaymodel.train_file:
+            update = False
+    except EssayModel.DoesNotExist:
+        update = True
     essaymodel.train_file_updated = '1' if update else '0'
 
 
@@ -142,6 +141,9 @@ class Essay(models.Model):
     predicted_mark = models.IntegerField()
     original_mark = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (('user', 'essaymodel', 'text'))
 
     def __str__(self):
         return str(self.id)+'Model: '+self.essaymodel.name+', User:\

@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
         {% block title %}
-        Essays
+        {% if search %}{{query}}{% else %}Essays{% endif %}
         {% endblock %}
 
         {% block head %}
@@ -17,7 +17,7 @@
 
         {% block body %}
         <div class="container">
-                    <h3 class="">Essay List
+                    <h3 class="">Essay {% if search %}Search {% endif %}List
                         <span class="pull-right"><a class="btn btn-sm {{btn_primary}}" href="register">Register</a></span>
                     </h3>
             <legend></legend>
@@ -46,6 +46,9 @@
 
             {% endfor %}
             </div>
+            {% load pagination %}
+            <div class="text-center">{% pagination essaysets 'e_page' %}</div>
+
         </div>
 
     {% endblock %}
