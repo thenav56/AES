@@ -17,6 +17,7 @@
   "dependencies": {
     "jquery": "^1.12.2",
     "bootstrap": "3.3.6",
-    "plotlyjs": "plotly#^1.4.1"
+    "plotlyjs": "plotly#^1.4.1",
+    "bower-bootswatch-paper": "paper-less#*"
   }
 }
