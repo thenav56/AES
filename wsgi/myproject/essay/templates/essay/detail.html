@@ -1,41 +1,172 @@
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        <title>Aes | Evalute</title>
-    </head>
-    <body>
-        <div class="container">
-            <legend>{{ essayModel.name }}</legend>
-            <ul>
-                <li>Essay Model Created Date: {{ essayModel.created }}</li>
-                <li>Essay Model Info: {{ essayModel.info }}</li>
-                <li>Essay Model Train Length: {{ essayModel.train_len }}</li>
-                <li>Essay Model Train Status: {{ cronjobStatus }}</li>
+{% extends 'layout.html' %}
+{% block title %}
+{{essayModel.name}}
+{% endblock %}
+
+
+{% block head %}
+<style>
+    div.essay-view p{
+        font-size:18px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2">
+            <h5 class="text-center">{{essayModel.name}}</h5>
+            <!-- Nav tabs -->
+            <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" class="active"><a data-toggle="tab" href="#essayInfo">Info</a></li>
+            <li role="presentation"><a data-toggle="tab" href="#essayEvalute">Evalute</a></li>
+            <li role="presentation"
+            {% if request.user.is_authenticated == False %} class="disabled" {% endif %}><a
+                {% if request.user.is_authenticated %}
+                data-toggle="tab"
+                {% else %}
+                title="Log In" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="Please Log In To View Your Submitted Essay"
+              {% endif %}
+                href="#previousEssay">Submitted(Yours)</a></li>
             </ul>
-           <form class="form-horizontal" role="form" method="POST" action="">{% csrf_token %}
-               <legend>Evalute essay</legend>
-               {% if flash == True %}
-               <div class="alert {{alert}}">
-                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                     <strong>{{scored_position}}</strong> You Have Scored Marks of : {{marks_scored}}
-               </div>
-               {% endif %}
-               <div class="form-group">
-                   <label class="control-label col-sm-2" for="essay_text">Write Essay Here : </label>
-                   <div class="col-sm-8">
-                       <textarea class="form-control" rows="15" {{autofocus}} required="true" style="resize:none" type="text" name="essay_text" placeholder="Write Essay Here">{{ essay_text}}</textarea>
-                   </div>
-               </div>
-               <div class="col-sm-offset-2 col-sm-10">
-               <button type="submit" class="btn btn-success">Submit</button>
-               </div>
-            </form>
         </div>
-    </body>
-</html>
+
+        <br>
+        <div class="col-lg-10">
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div id="essayInfo" class="tab-pane fade in active">
+                    <div class="panel-group" id="accordion">
+                    {% include 'essay/_info.html' %}
+                    {% include 'essay/_advancedInfo.html' %}
+                    </div>
+                </div>
+            <div id="essayEvalute" class="tab-pane fade">
+                {% include 'essay/_evaluate.html' %}
+            </div>
+            <div id="previousEssay" class="tab-pane fade">
+                {% include 'essay/_previousUserEssay.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block bottom %}
+<script src="{% static "ajax_setup.js" %}"></script>
+<script src="{% static "essay/evaluate_essay.js" %}"></script>
+<!--PopOver And Nav-Pills hash show-->
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="popover"]').popover({container: 'body'});
+    });
+    var hash = window.location.hash;
+    jQuery('.nav.nav-pills a[href="' + hash + '"]').tab('show');
+</script>
+<!-- Plotly.js -->
+<script src="{% static "bower_components/plotlyjs/plotly.js" %}"></script>
+<script>
+    var trace1 = {
+      x: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      y: [3, 6, 3, 8, 6, 7, 9, 8, 12, 10, 12],
+      name: 'Predicted', 
+      marker: {color: 'rgb(55, 83, 109)'}, 
+      type: 'bar'
+    };
+
+    var trace2 = {
+      x: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      y: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      name: 'Original', 
+      marker: {color: 'rgb(26, 118, 255)'}, 
+      type: 'bar'
+    };
+
+    var data = [trace1, trace2];
+
+    var layout = {
+      title: 'Automated Essay Grading',
+      xaxis: {
+          title: 'Score Classes',
+          tickfont: {
+          size: 14, 
+          color: 'rgb(107, 107, 107)'
+        }}, 
+      yaxis: {
+        title: 'Score',
+        titlefont: {
+          size: 16, 
+          color: 'rgb(107, 107, 107)'
+        }, 
+        tickfont: {
+          size: 14, 
+          color: "rgb(107, 107, 107)"
+        }
+      }, 
+      legend: {
+        x: 0, 
+        y: 1.0, 
+        bgcolor: 'rgba(255, 255, 255, 0)',
+        bordercolor: 'rgba(255, 255, 255, 0)'
+      }, 
+      barmode: 'group', 
+      bargap: 0.15, 
+      bargroupgap: 0.1
+    };
+
+    Plotly.newPlot('myDiv1', data, layout);  </script>
+</script>
+<script>
+
+
+var trace1 = {
+  x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  y: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  type: 'scatter'
+};
+var trace2 = {
+  x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  y: [0, 1, 4, 3.83, 5, 8, 9, 8],
+  name: 'ROC Curve',
+  type: 'scatter'
+};
+var data = [trace1, trace2];
+var layout = {
+  title: 'False Positive Rate',
+  xaxis: {
+    title: 'x Axis',
+    titlefont: {
+      family: 'Courier New, monospace',
+      size: 18,
+      color: '#7f7f7f'
+    }
+  },
+  yaxis: {
+    title: 'True Positive Rate',
+    titlefont: {
+      family: 'Courier New, monospace',
+      size: 18,
+      color: '#7f7f7f'
+    }
+  }
+};
+Plotly.newPlot('myDiv2', data, layout);
+</script>
+<script>
+    var trace1 = {
+        x: [1,2,3,4,5],
+        y: [1,2,3,4,5],
+        mode: 'markers+text',
+        type: 'scatter',
+        name: 'Class 2',
+        text: ['2-1', '2-2', '2-3', '2-4', '2-6', '2-7', '2-8', '2-9', '2-10', '2-11', '2-12'],
+        textposition: 'top center',
+        textfont: {
+            family: 'Raleway, sans-serif'},
+    };
+</script>
+{% endblock %}
 

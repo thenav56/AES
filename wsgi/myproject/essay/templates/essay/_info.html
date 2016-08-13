@@ -1,0 +1,36 @@
+<div class="panel {{panel_default}}">
+    <div class="panel-heading" role="tab" id="headingOne">
+        <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Essay Model Detail
+            </a>
+        </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+    <div class="table-responsive">
+        <table class="table">
+          <thead>
+          </thead>
+          <tbody>
+              <tr>
+                <td>Essay Model Created Date</td>
+                <td> {{ essayModel.created }}</td>
+              </tr>
+              <tr>
+                <td>Essay Model Info </td>
+                <td>{{ essayModel.info }}</td>
+              </tr>
+              <tr>
+                <td>Essay Model Train Length </td>
+                <td>{{ essayModel.train_len }}</td>
+              </tr>
+              <tr>
+                <td>Essay Model Train Status </td>
+                <td>{{ essayModel.cronjob.get_status_display }}</td>
+              </tr>
+          </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+

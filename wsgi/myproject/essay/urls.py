@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     # url(r'^api/', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls')),
-    url(r'^(?P<essayModel_id>[0-9]+)/$', views.view, name='view'),
+    url(r'^(?P<essayModel_id>[0-9]+)/$', views.view, name='detail'),
 ]

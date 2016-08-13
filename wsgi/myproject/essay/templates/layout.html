@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>AES | {% block title %}{% endblock %}</title>
+
+        <link rel="stylesheet" href="{% static "bower_components/bower-bootswatch-paper/css/paper.css"  %}">
+
+        <style>
+            html {
+              position: relative;
+              min-height: 100%;
+            }
+            body {
+                padding-top: 70px;
+                padding-bottom: 70px;
+            }
+            .section {
+                padding-top: 60px;
+                margin-top: -60px;
+            }
+            footer {
+              width:100%;
+              height:80px;
+              position:absolute;
+              bottom:0;
+              left:0;
+            }
+            div.custom-alert-notify{
+              margin-bottom:-12px;
+              margin-left:25%;
+              margin-right:0%;
+              margin-top:-10px;
+              width:50%;
+            }
+
+            {% assign nav_pills_color "#aaa" %}
+            .nav-pills > li.active > a, .nav-pills > li.active > a:focus {
+                background-color: {{nav_pills_color}};
+            }
+            .nav-pills > li.active > a:hover {
+                background-color: {{nav_pills_color}};
+            }
+        </style>
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body>
+
+    {% assign panel_default "panel-default" %}
+    {% assign button_primary "btn-default" %}
+     <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'index'  %}">AES<font size="1px">(BETA)</font></a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <!--<li>-->
+                        <!--<a class="dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Category<span class="caret"></span></a>-->
+                        <!--<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">-->
+                             <!--<li role="presentation"><a role="menuitem" tabindex="-1" href="/category/1/detail">electronics</a></li>-->
+                        <!--</ul>-->
+                    <!--</li>-->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if request.user.is_superuser %}
+                    <li>
+                        <a href="{% url 'admin:index' %}">Admin</a>
+                    </li>
+                    {% endif %}
+                    {% if request.user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'logout' %}">LogOut</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="{% url 'login' %}">LogIn</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="text-center custom-alert-notify alert alert-dismissible 
+        {% if message.tags %}
+              {% if message.tags == 'error' %}
+                {{ 'alert-danger' }}
+              {% else %}
+              {{ 'alert-'}}{{message.tags }}
+              {% endif %}
+        {% endif %} fade in">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}ERROR!{% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}INFO{% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}SUCCESS{% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}WARNING!{% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}DEBUG{% endif %}
+            </h4>
+                {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+        {% block body %}{% endblock %}
+
+
+     <footer>
+         <div class="container-fluid"><hr>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p class="text-center">Automated Essay Scoring <a href="http://github.com/thenav56/AES">GITHUB</a></p>
+                </div>
+            </div>
+            </div>
+    </footer>
+
+    </body>
+
+    <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    {% block bottom %}
+    {% endblock %}
+</html>

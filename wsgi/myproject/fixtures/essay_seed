@@ -1,0 +1,52 @@
+[
+  {
+    "model": "essay.essaymodel",
+    "pk": 1,
+    "name": 'Computer',
+    "info": 'About Computer: Data set 100',
+    "train_file": 'train_file/computer/20168121529/train.xlsx',
+    "train_len": 100,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 2,
+    "name": 'Books',
+    "info": 'Important of Books: Data set 100',
+    "train_file": 'train_file/computer/20168121529/train2.xlsx',
+    "train_len": 100,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 3,
+    "name": 'Computer',
+    "info": 'About Computer: Data set 200',
+    "train_file": 'train_file/computer/20168121529/train.xlsx',
+    "train_len": 200,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 4,
+    "name": 'Books',
+    "info": 'Important of Books: Data set 200',
+    "train_file": 'train_file/computer/20168121529/train2.xlsx',
+    "train_len": 200,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 5,
+    "name": 'Computer',
+    "info": 'About Computer': Data set 500,
+    "train_file": 'train_file/computer/20168121529/train.xlsx',
+    "train_len": 500,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 6,
+    "name": 'Books',
+    "info": 'Important of Books: Data set 500',
+    "train_file": 'train_file/computer/20168121529/train2.xlsx',
+    "train_len": 500,
+  },{
+    "model": "essay.essaymodel",
+    "pk": 7,
+    "name": 'Computer',
+    "info": 'About Computer: Data set 100',
+    "train_file": 'train_file/computer/20168121529/train.xlsx',
+    "train_len": 1000,
+  },
+  ]

@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block title %} 404 {% endblock %}
+
+
+{% block head %}
+
+<style>
+h1, h3, p {
+    text-align: center;
+    font-family: "Trebuchet MS";
+}
+
+h1 {
+    padding-top:10%;
+    font-family: "Comic Sans MS";
+    font-size: 700%;
+}
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h1>500 error</h1>
+
+    <h3>Internal Server Error</h3>
+    <p>Opps... Something is wrong with me....</p>
+    <br>
+    <p><a class="btn btn-default btn-lg" href="{% url 'index' %}">Go Home</a></p>
+</div>
+
+{% endblock %}

@@ -1,26 +1,53 @@
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        <title>Aes</title>
-    </head>
-    <body>
+{% extends 'layout.html' %}
+        {% block title %}
+        Essays
+        {% endblock %}
+
+        {% block head %}
+        <style>
+            a.essay-item{
+                Text-decoration:none;
+                color:black;
+            }
+            div.essay-item:hover{
+                 box-shadow: 5px 5px 5px 3px #888888;
+            }
+        </style>
+        {% endblock %}
+
+        {% block body %}
         <div class="container">
-            <legend>Essay List <span class="pull-right"><a class="btn btn-sm" href="register">Register</a></span></legend>
+                    <h3 class="">Essay List
+                        <span class="pull-right"><a class="btn btn-sm {{btn_primary}}" href="register">Register</a></span>
+                    </h3>
+            <legend></legend>
+            <div class="row">
             {% for essay in essaysets %}
-            <div class="panel panel-success">
-                <div class="panel-heading">{{ essay.name }}</div>
-                <ul class="list-group">
-                    <li class="list-group-item">Info: {{ essay.info }}</li>
-                    <li class="list-group-item">Evalute: <a class="btn btn-sm btn-success" href="{{ essay.pk }}">Click Here</a></li>
-                </ul>
+                <div class="col-sm-3">
+                    <div class="essay-item">
+                        <a class="essay-item" href="{% url 'essay:detail' essay.pk %}">
+                            <div class="panel {{panel_default}}">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                {{ essay.name }}
+                                </h4>
+                            </div>
+                            <div class="panel-body">
+                                      {{ essay.info|truncatechars:150 }}
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+            {% if forloop.counter|divisibleby:4 %}
             </div>
+            <div class="row">
+            {% endif %}
+
             {% endfor %}
+            </div>
         </div>
-    </body>
+
+    {% endblock %}
 </html>
 

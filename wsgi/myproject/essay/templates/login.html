@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %} Log In {% endblock %}
+{% block body %}
+<div class="col-lg-offset-4 col-lg-4" style="margin-top:20px">
+    <div class="well bs-component">
+    <legend>Sign in</legend>
+
+    <form class="form-horizontal" method="POST" action="." accept-charset="UTF-8" role="form">
+        <fieldset>
+
+    {% if form.errors %}
+         <div class="alert alert-dismissible alert-warning">
+             <button type="button" class="close" data-dismiss="alert">&times;</button>
+             <h4>Warning!</h4>
+             {% for field in form %}
+                 {% for error in field.errors %}
+                 {{field.label_tag}}{{error}}<br>
+                 {% endfor %}
+             {% endfor %}
+         </div>
+    {% endif %}
+
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="email">Username</label>
+            <div class="col-lg-8">
+                <input required="true" autofocus="" class="form-control" id="username" name="username" placeholder="Your UserName" value="" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="email">Password</label>
+            <div class="col-lg-8">
+                <input required="true" class="form-control" id="password" name="password" placeholder="Password" value="" type="password">
+            </div>
+        </div>
+        <span class="pull-right"><button type="submit" name="submit">Log in</button></span>
+      <fieldset>
+    </form>
+  </div>
+</div>
+{% endblock %}

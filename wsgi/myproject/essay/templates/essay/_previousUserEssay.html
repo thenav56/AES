@@ -1,0 +1,20 @@
+{% if previous_user_essay != 'None' %}
+
+    {% if previous_user_essay.paginator.count %}
+
+            {% for essay in previous_user_essay %}
+            <div class="essay-view well">
+                <h6 class="text-right">Date: {{essay.created_at}}</h6>
+                <p>{{essay.text}}</p>
+            </div>
+            {% endfor %}
+
+        {% load pagination %}
+        {% pagination previous_user_essay 'p_u_e_page' 'previousEssay' %}
+    {% else %}
+        <p>Submitted Essay Will Appear Here</p>
+    {% endif %}
+
+{% else %}
+    <p>Log In To View</p>
+{% endif %}

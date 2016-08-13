@@ -1,0 +1,20 @@
+<form class="form-horizontal" role="form" method="POST" action="" id="essay-evaluate-form">
+   {% csrf_token %}
+   <div id="show-form-response"></div>
+   {% if flash == True %}
+   <div class="alert {{alert}}">
+         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+         <strong>{{scored_position}}</strong> You Have Scored Marks of : {{marks_scored}}
+   </div>
+   {% endif %}
+   <div class="form-group">
+       <!--<label class="control-label col-sm-2" for="essay_text">Write Essay Here : </label>-->
+       <div class="col-sm-offset-2 col-sm-8">
+           <textarea id="essay-text" class="form-control" rows="13" required="true" style="resize:none" type="text" name="essay_text" placeholder="Write Essay Here">{{ essay_text}}</textarea>
+       </div>
+   </div>
+   <div class="col-sm-offset-2 col-sm-8">
+       <span class="pull-right"><button type="submit" data-loading-text="Evaluating..." class="btn btn-sm {{btn_primary}}" autocomplete="off">Submit</button></span>
+   </div>
+</form>
+

@@ -10,3 +10,5 @@ wsgi/myproject/media
 wsgi/myproject/*/migrations
 .corn.lock
 wsgi/myproject/env/
+wsgi/static/bower_components
+wsgi/myproject/db.sqlite3

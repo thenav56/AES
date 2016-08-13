@@ -32,7 +32,9 @@ DEBUG = True
 # if on_openshift:
     # DEBUG = False
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-ALLOWED_HOSTS = []
+
+if on_openshift:
+    ALLOWED_HOSTS = ['aes-navinir.rhcloud.com', 'aes.navinayer.com.np']
 
 
 # Application definition
@@ -74,6 +76,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'django.contrib.staticfiles.templatetags.staticfiles',
+                'essay.templatetags.assign',
+        ],
         },
     },
 ]
@@ -98,11 +104,12 @@ if on_openshift:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-            'NAME':     'aes',
-            'USER':     'root',
-            'PASSWORD': 'password',
+            # 'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            # 'NAME':     'aes',
+            # 'USER':     'root',
+            # 'PASSWORD': 'password',
         }
     }
 
@@ -138,6 +145,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Media Root and Url
 if on_openshift:
