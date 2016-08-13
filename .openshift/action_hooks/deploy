@@ -18,3 +18,9 @@ python "$OPENSHIFT_REPO_DIR"wsgi/myproject/manage.py migrate --noinput
 echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/myproject/manage.py collectstatic --noinput'"
 # GETTING-STARTED: change 'myproject' to your project name:
 python "$OPENSHIFT_REPO_DIR"wsgi/myproject/manage.py collectstatic --noinput
+
+
+HOME=$HOME/app-root/runtime
+cd ~/repo
+npm install bower
+./node_modules/.bin/bower install
