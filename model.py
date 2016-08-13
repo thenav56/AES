@@ -34,13 +34,53 @@ class EssayModel:
         print('training set fit', clf.score(self.train_vectors, self.target))
         self.model = clf
 
-    def skscore(self, essays, targets):
+    def score(self, essays, targets):
         acc = 0
+        sum_a = 0
+        sum_p = 0
+        sum_aa = sum_pp = 0
+        sum_ap = 0
+        print('max scor', self.min_score, self.max_score)
+        tot_dist = 0
+        L = self.min_score
+        U = self.max_score
+        predict = {i : 0 for i in range(L, U + 1)}
+        actual = {i : 0 for i in range(L, U + 1)}
+        #running kappa calculator
         for i, j in enumerate(essays):
             v = self.lowSpace(self.vectorize(kwrank.filter(j, None)))
             p = self.model.predict([v])[0]
+            predict[p] += 1
+            actual[targets[i]] += 1
             acc += p == targets[i]
-            print('test set fit', acc / (i + 1.0), 'actual', targets[i], 'predicted', p)
+            sum_a += targets[i]
+            sum_p += p
+            sum_ap += p * targets[i]
+            sum_aa += targets[i] * targets[i]
+            sum_pp += p * p
+            jac = acc / (i + 1.0)
+            dist = lambda a, b: (a - b) ** 2 / float((self.max_score - self.min_score) ** 2)
+            tot_dist += dist(p, targets[i])
+            disagree = 0
+            #compute the probability of random disagreement
+            N = float(i + 1)
+            for k in range(L, U + 1):
+                for l in range(L, U + 1):
+                    if k != l:
+                        p1 = predict[k] / N
+                        p2 = actual[l] / N
+                        disagree += p1 * p2 * dist(k, l)
+            dist_normalized = tot_dist / (i + 1.0)
+            print('rand agreement', 1 - disagree)
+            #if raters are more likely to accept in random, penalize the observed distance
+            kappa = 1 - dist_normalized / disagree
+            print('test set fit %', jac * 100, 'actual', targets[i], 'predicted', p, 'kappa %', kappa * 100);
+
+        n = len(essays)
+        den = math.sqrt(n * sum_aa - sum_a * sum_a) * math.sqrt(n * sum_pp - sum_p * sum_p);
+        if den:
+            cor = (n * sum_ap - sum_a * sum_p) / den
+            print('correlation', cor)
 
     def computeEigenVectors(self):
         import numpy as np
@@ -62,11 +102,13 @@ class EssayModel:
         d = np.array(data)
         return [np.dot(d, j) for j in self.evectors]
 
-    def train(self, essays, scores, sk = False):
+    def train(self, essays, scores, min_score, max_score, sk):
+        self.min_score = min_score
+        self.max_score = max_score
         essays = [kwrank.filter(i, self.spellCorr) for i in essays]
         self.parameters_from_essays(essays)
-        print(self.bagofwords)
-        input('enter to continue...')
+        #print(self.bagofwords)
+        #input('enter to continue...')
         #now vectorize each essay string
         self.train_vectors = [self.vectorize(i) for i in essays]
         if self.svd:
@@ -83,22 +125,13 @@ class EssayModel:
         print("training own")
         self.model = msvm.MSVM(whole)
         print("finished own")
-        print('total bag ', len(self.bagofwords))
-        input('pause')
+        #print('total bag ', len(self.bagofwords))
+        #input('pause')
         #for i in self.bagofwords:
         #    print(i)
         #    input('')
         #print('fitness:', self.model.score(self.train_vectors, scores))
     
-    #vectorize an essay (list of words)
-    def score(self, essays, targets):
-        t = 0
-        for i, j in enumerate(essays):
-            r = self.lowSpace(self.vectorize(kwrank.filter(j, None)))
-            res = self.model.classify(np.array(r))
-            t += targets[i] == res
-            print('score ', targets[i], 'prediction', res, 'acc', t * 1.0 / (i + 1))
-
     #predict score of essays, essay is a list of words
     def predict(self, essays, sk = False): 
         v = [self.lowSpace(self.vectorize(kwrank.filter(i, None))) for i in essays]

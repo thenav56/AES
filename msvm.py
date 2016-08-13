@@ -25,25 +25,28 @@ class MSVM:
         self.bsvms = None # 3-tuple (class corresponding to +ve class, cls corr -ve, binarysvm)
         self.build()
 
-    def classify(self, data):
-        if len(self.classes) == 1:
-            return self.classes[0]
-        votes = {}
-        for i in self.classes:
-            votes[i] = [0, 0]
-        for cl1, cl2, svm in self.bsvms:
-            r = svm.classify(data)
-            if r > 0:
-                votes[cl1][0] += 1
-                votes[cl1][1] += r
-            else:
-                votes[cl2][0] += 1
-                votes[cl2][1] -= r
-        #mv = max(self.classes, key = lambda cl: votes[cl]) #xXx
-        #for i in votes:
-        #    if votes[mv] == votes[i]:
-        #        print('A')
-        return max(self.classes, key = lambda cl: votes[cl]) #xXx
+    def predict(self, data):
+        ret = []
+        for vec in data:
+            if len(self.classes) == 1:
+                return self.classes[0]
+            votes = {}
+            for i in self.classes:
+                votes[i] = [0, 0]
+            for cl1, cl2, svm in self.bsvms:
+                r = svm.classify(vec)
+                if r > 0:
+                    votes[cl1][0] += 1
+                    votes[cl1][1] += r
+                else:
+                    votes[cl2][0] += 1
+                    votes[cl2][1] -= r
+            #mv = max(self.classes, key = lambda cl: votes[cl]) #xXx
+            #for i in votes:
+            #    if votes[mv] == votes[i]:
+            #        print('A')
+            ret.append(max(self.classes, key = lambda cl: votes[cl])) #xXx
+        return ret
 
     def build(self):
         classes = set(i for _, i in self.dataset)
