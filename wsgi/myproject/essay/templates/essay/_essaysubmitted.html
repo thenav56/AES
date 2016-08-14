@@ -1,0 +1,32 @@
+{% if submitted_essay != 'None' %}
+
+    {% if submitted_essay.paginator.count %}
+
+            {% for essay in submitted_essay %}
+            <div class="essay-view well">
+                <h6 class="text-right">Date: {{essay.created_at}}</h6>
+                <p>{{essay.text}}</p>
+            </div>
+            <form class="form-horizontal" role="form" method="POST" action="" id="submitted-essay-update-form">
+               {% csrf_token %}
+               <div id="show-update-essay-response"></div>
+               <input type="number" name="essayID" value="{{essay.pk}}" hidden>
+               <div class="row">
+                       <div class="col-sm-8">
+                           <input id="original-mark" class="form-control" required="true" type="number" name="o_mark" placeholder="Original Mark"
+                              value="{{essay.original_mark}}">
+                       </div>
+                   <div class="col-sm-4">
+                      <button type="submit" data-loading-text="Submitting..." class="btn btn-sm {{btn_primary}}" autocomplete="off">Update</button>
+                   </div>
+               </div>
+            </form>
+            {% endfor %}
+
+        {% load pagination %}
+        {% pagination submitted_essay 's_e_page' 'essaysubmitted' %}
+    {% else %}
+        <p>Submitted Essay Will Appear Here</p>
+    {% endif %}
+
+{% endif %}

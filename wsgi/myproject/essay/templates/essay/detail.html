@@ -30,6 +30,9 @@
                 title="Log In" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="Please Log In To View Your Submitted Essay"
               {% endif %}
                 href="#previousEssay">Submitted(Yours)</a></li>
+            {% if request.user.is_superuser %}
+            <li role="presentation"><a data-toggle="tab" href="#essaysubmitted">View Submitted Essay</a></li>
+            {% endif %}
             </ul>
         </div>
 
@@ -49,6 +52,11 @@
             <div id="previousEssay" class="tab-pane fade">
                 {% include 'essay/_previousUserEssay.html' %}
             </div>
+            {% if request.user.is_superuser %}
+            <div id="essaysubmitted" class="tab-pane fade">
+                {% include 'essay/_essaysubmitted.html' %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -58,6 +66,7 @@
 {% block bottom %}
 <script src="{% static "ajax_setup.js" %}"></script>
 <script src="{% static "essay/evaluate_essay.js" %}"></script>
+<script src="{% static "essay/update_submitted_essay_score.js" %}"></script>
 <!--PopOver And Nav-Pills hash show-->
 <script>
     $(document).ready(function(){

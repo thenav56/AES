@@ -135,8 +135,8 @@ def post_generate_model(sender, **kwargs):
 
 
 class Essay(models.Model):
-    user = models.ForeignKey(User)
-    essaymodel = models.ForeignKey(EssayModel)
+    user = models.ForeignKey(User, related_name='essays')
+    essaymodel = models.ForeignKey(EssayModel, related_name='essays')
     text = models.CharField(max_length=500)
     predicted_mark = models.IntegerField()
     original_mark = models.IntegerField(blank=True, null=True)
@@ -144,6 +144,7 @@ class Essay(models.Model):
 
     class Meta:
         unique_together = (('user', 'essaymodel', 'text'))
+        ordering = ['-created_at']
 
     def __str__(self):
         return str(self.id)+'Model: '+self.essaymodel.name+', User:\

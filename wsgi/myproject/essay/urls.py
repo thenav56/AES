@@ -10,6 +10,8 @@ from . import views
 urlpatterns = [
     url(r'^register', views.register, name='register'),
     url(r'^search', views.search, name='search'),
+    url(r'^update_submitted_essay_score',
+        views.essay_original_submit, name='update_submitted_essay_score'),
     url(r'^$', views.index, name='index'),
     # url(r'^api/', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls')),

@@ -22,18 +22,18 @@
                     </h3>
             <legend></legend>
             <div class="row">
-            {% for essay in essaysets %}
+            {% for essayModel in essaysets %}
                 <div class="col-sm-3">
                     <div class="essay-item">
-                        <a class="essay-item" href="{% url 'essay:detail' essay.pk %}">
+                        <a class="essay-item" href="{% url 'essay:detail' essayModel.pk %}">
                             <div class="panel {{panel_default}}">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
-                                {{ essay.name }}
+                                {{ essayModel.name }}
                                 </h4>
                             </div>
                             <div class="panel-body">
-                                      {{ essay.info|truncatechars:150 }}
+                                      {{ essayModel.info|truncatechars:150 }}
                             </div>
                         </div>
                         </a>

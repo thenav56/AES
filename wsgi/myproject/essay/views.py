@@ -81,6 +81,7 @@ def view(request, essayModel_id):
         if request.method == 'GET':
             essay_text = ''
             previous_user_essay = 'None'
+            submitted_essay = None
 
             if request.user.is_authenticated():
                 previous_user_essay = Essay.objects.\
@@ -90,7 +91,8 @@ def view(request, essayModel_id):
 
                 if previous_user_essay.count():
                     essay_text = previous_user_essay.first().text
-                paginator = Paginator(previous_user_essay, 1)
+
+                paginator = Paginator(previous_user_essay, 3)
                 page = request.GET.get('p_u_e_page')
 
                 try:
@@ -102,11 +104,25 @@ def view(request, essayModel_id):
                     # If page is out of range (e.g. 9999), deliver last page of results.
                     previous_user_essay = paginator.page(paginator.num_pages)
 
+                if request.user.is_superuser:
+                    paginator = Paginator(essayModel.essays.all(), 3)
+                    page = request.GET.get('s_e_page')
+
+                    try:
+                        submitted_essay = paginator.page(page)
+                    except PageNotAnInteger:
+                        # If page is not an integer, deliver first page.
+                        submitted_essay = paginator.page(1)
+                    except EmptyPage:
+                        # If page is out of range (e.g. 9999), deliver last page of results.
+                        submitted_essay = paginator.page(paginator.num_pages)
+
             context = {
                     'essayModel': essayModel,
                     'autofocus': 'autofocus',
                     'essay_text': essay_text,
                     'previous_user_essay': previous_user_essay,
+                    'submitted_essay': submitted_essay,
                     }
 
             return render(request, 'essay/detail.html', context)
@@ -124,8 +140,13 @@ def view(request, essayModel_id):
 
             if request.user.is_authenticated():
                 try:
-                    essay_submit = Essay(user=request.user, essaymodel=essayModel,
-                                         predicted_mark=t, text=essay_text)
+                    essay_submit = Essay.objects.filter(user=request.user,
+                                                      essaymodel=essayModel).first()
+                    if essay_submit is None:
+                        essay_submit = Essay(user=request.user, essaymodel=essayModel,
+                                             predicted_mark=t, text=essay_text)
+                    else:
+                        essay_submit.text = essay_text
                     essay_submit.save()
                 except IntegrityError as e:
                     pass
@@ -144,3 +165,22 @@ def view(request, essayModel_id):
 
     except EssayModel.DoesNotExist:
         raise Http404("Essay Model does not Exist")
+
+
+def essay_original_submit(request):
+    response = 'Invalid Request'
+    if request.method == 'POST':
+        essayID = request.POST['essayID']
+        essay = Essay.objects.get(pk=essayID)
+        if essay:
+            original_mark = request.POST['o_mark']
+            essay.original_mark =  original_mark
+            essay.save()
+            response = 'Submitted'
+        else:
+            response = 'Essay Does Not Exist'
+
+    context = { 'response': response }
+    return HttpResponse(json.dumps(context),
+                        content_type="application/json")
+
