@@ -73,7 +73,7 @@ class EssayModel:
             dist_normalized = tot_dist / (i + 1.0)
             print('rand agreement', 1 - disagree)
             #if raters are more likely to accept in random, penalize the observed distance
-            kappa = 1 - dist_normalized / disagree
+            kappa = 1 - (1 if disagree == 0 else min(1, dist_normalized / disagree))
             print('test set fit %', jac * 100, 'actual', targets[i], 'predicted', p, 'kappa %', kappa * 100);
 
         n = len(essays)
@@ -133,18 +133,16 @@ class EssayModel:
         #print('fitness:', self.model.score(self.train_vectors, scores))
     
     #predict score of essays, essay is a list of words
-    def predict(self, essays, sk = False): 
+    def predict(self, essays): 
         v = [self.lowSpace(self.vectorize(kwrank.filter(i, None))) for i in essays]
-        if sk:
-            return self.model.predict(v)
-        return [self.model.classify(i) for i in v]
+        return self.model.predict(v)
 
     def parameters_from_essays(self, essays):
         approach = 2
         if approach == 1:
             #join sentences from all essays into a single array
             ns = [j for i in essays for j in i]
-            self.bagofwords = kwrank.kwRank(ns)
+            self.bagofwords = kwrank.kwRank(ns)[:2000]
         elif approach == 2:
             self.bagofwords = []
             ns = [kwrank.kwRank(i)[:20] for i in essays]

@@ -34,20 +34,20 @@ def mlda(el):
 
 def main():
     from openpyxl import load_workbook
-    wb = load_workbook('train2.xlsx')
+    wb = load_workbook('train.xlsx')
     ws = wb.active
     data = [[j.value for j in i] for i in ws]
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 250
+    train_len = 150
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
     test_score = score[train_len:]
     s = time.time()
     load = False
-    sk = False
+    sk = True
     mins = min(score)
     maxs = max(score)
     if load:
@@ -61,8 +61,8 @@ def main():
     print("Total time", time.time() - s)
     input('enter..')
     while True:
-        s = input('Write an essay\n').split()
-        t = model.predict([s], sk)[0]
+        s = input('Write an essay\n')
+        t = model.predict([s])[0]
         print(t)
 #    dc = {}
 #    count = {}
