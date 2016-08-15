@@ -6,10 +6,11 @@ import numpy as np
 class EssayModel:
 
     def __init__(self, model, feature_transform):
-        self.model = model
         self.datasets = None
-        self.ftransform = feature_transform
         self.target = None
+
+        self.model = model
+        self.ftransform = feature_transform
 
     def score(self, datasets, targets):
         acc = 0
