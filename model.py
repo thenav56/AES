@@ -61,7 +61,7 @@ class EssayModel:
             print('correlation', cor)
 
     def train(self, datasets, scores, min_score, max_score):
-        self.ftransform.setDataSet(datasets)
+        self.ftransform.setDataSet(datasets, scores)
         datasets = self.ftransform.getTransformed(datasets, False)
         self.min_score = min_score
         self.max_score = max_score

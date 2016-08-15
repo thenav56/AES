@@ -19,10 +19,10 @@ class BaseFeatureTransform:
         self.bagofwords = None
         self.spellCorr = loadspellcorrector()
 
-    def setDataSet(self, data_set):
+    def setDataSet(self, data_set, score):
         self.data_set = data_set
+        self.score = score
         self.parameters_from_essays()
-        self.tokenized = [self.tokenizeEssay(i) for i in self.data_set]
 
     def getTransformed(self, essays, corr = False):
         return [self.vectorize(self.refine(
@@ -69,7 +69,12 @@ class BaseFeatureTransform:
         return r
 
     def parameters_from_essays(self):
-        s = [self.refine(self.tokenizeEssay(i, self.spellCorr)) for i in self.data_set]
+        self.tokenized = []
+        s = []
+        for i in self.data_set:
+            self.tokenized += self.tokenizeEssay(i, self.spellCorr), 
+            s += self.refine(self.tokenized[-1]),
+
         approach = 2
         if approach == 1:
             #join sentences from all essays into a single array
