@@ -1,44 +1,5 @@
 #!/bin/python
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
 import string
-from cspell.spell_corrector import cspell
-
-def filter(essay, spellCorr):
-    essay = ''.join([' ' if i == '/' else i for i in essay])
-    r = nltk.sent_tokenize(essay)
-    r = [nltk.word_tokenize(i) for i in r]
-    r = [nltk.pos_tag(i) for i in r]
-    if spellCorr != None:
-        nr = []
-        for i in r:
-            s = []
-            for j in i:
-                s.append([spellCorr.best_word(j[0].lower()), j[1]])
-            nr.append(s)
-        r = nr
-    r = [[j for j in i if j[0] != None and j[0][0] in string.ascii_lowercase] for i in r] 
-    nr = []
-    lm = WordNetLemmatizer()
-    for i in r:
-        s = []
-        for j in i:
-            w = j[0]
-            tag = j[1]
-            if 'NN' in tag[:2]:
-                w = lm.lemmatize(w, 'n')
-            elif 'VB' in tag[:2]:
-                w = lm.lemmatize(w, 'v')
-            s.append([w, tag])
-        nr.append(s)
-    r = nr
-    stp = stopwords.words('english')
-    r = [[j for j in i if j[0].lower() not in stp] for i in r] 
-    #remove useless words   
-    pt = ['PRP', 'WRB', 'PRP$', 'MD', 'NNP', 'CC', 'IN', 'VBZ', 'WP$']
-    r = [[j for j in i if j[1] not in pt] for i in r]
-    return r
 
 def kwRank(essay, window = 3, d = .85):
     debug = False

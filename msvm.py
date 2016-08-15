@@ -17,13 +17,9 @@ import pickle
 
 class MSVM:
 
-    def __init__(self, dataset, C = 10):
-        self.dataset = dataset
-        self.C = C
-        self.support_vectors = None
-        self.classes = None
+    def __init__(self, C = 10):
+        self.C = C#need to pass it to C module
         self.bsvms = None # 3-tuple (class corresponding to +ve class, cls corr -ve, binarysvm)
-        self.build()
 
     def predict(self, data):
         ret = []
@@ -48,17 +44,13 @@ class MSVM:
             ret.append(max(self.classes, key = lambda cl: votes[cl])) #xXx
         return ret
 
-    def build(self):
-        classes = set(i for _, i in self.dataset)
-        classes = [i for i in classes]#convert above to array
+    def fit(self, dataset, score):
+        classes = list(set(score))
+        self.dataset = dataset
         self.classes = classes
-        dict_cls = {}
-        for i in classes:
-            dict_cls[i] = []
-        p = 0
-        for a, b in self.dataset:
-            dict_cls[b].append(p)
-            p += 1
+        dict_cls = {i : [] for i in classes}
+        for i, j in enumerate(score):
+            dict_cls[j].append(i)
         if len(classes) > 1:
             self.bsvms = []
             for i in range(len(classes)):
@@ -68,8 +60,8 @@ class MSVM:
                     d1 = dict_cls[cl1]
                     d2 = dict_cls[cl2]
                     r = d1 + d2;
-                    d = [self.dataset[i][0] for i in r]
-                    t = [1 if self.dataset[i][1] == cl1 else -1 for i in r]
+                    d = [self.dataset[i] for i in r]
+                    t = [1 if score[i] == cl1 else -1 for i in r]
                     model = BSVM()
                     model.train(d, t)
                     self.bsvms.append([cl1, cl2, model])
@@ -77,7 +69,7 @@ class MSVM:
     def score(self, data, target, pr = False):
         r = 0
         for i, d in enumerate(data):
-            cr = self.classify(d)
+            cr = self.predict([d])[0]
             r += target[i] == cr
             if pr:
                 print('running', r / (i + 1))

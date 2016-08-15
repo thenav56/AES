@@ -2,6 +2,7 @@
 
 from model import EssayModel
 from model import load_from_file
+from ftransform import BaseFeatureTransform
 import time
 
 def mlda(el):
@@ -40,21 +41,27 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 150
+    train_len = 50
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
     test_score = score[train_len:]
     s = time.time()
     load = False
-    sk = True
     mins = min(score)
     maxs = max(score)
     if load:
         model = load_from_file('c2.model')
     else:
-        model = EssayModel()
-        model.train(train_essay, train_score, mins, maxs, sk)
+        sk = True
+        if sk:
+            from sklearn import svm
+            mod = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
+        else:
+            import msvm
+            mod = msvm.MSVM()
+        model = EssayModel(mod, BaseFeatureTransform())
+        model.train(train_essay, train_score, mins, maxs)
         model.score(test_essay, test_score)
         #model.dump('c2.model')
         #print("Model dumped\n")
