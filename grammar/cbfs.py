@@ -83,5 +83,16 @@ class Cbfs:
             del self.bagofwords[cindex]
             self.idf_vector = np.delete(self.idf_vector, cindex, 0)
 
+    def freq_vector(self):
+        f_vector = []
+        for each in self.tokenizedEssays:
+            count = [0] * len(bagofwords)
+            for i in range(len(bagofwords)):
+                for line in essay:
+                    for word in line:
+                        if word[0] in bagofwords:
+                            index = bagofwords.index(word[0])
+                            count[index] += 1
+            f_vector.append(count)
+        self.idf_vector = list(zip(i for i in f_vector))
 
-    
