@@ -90,7 +90,7 @@ class BaseFeatureTransform:
         return d
         
     #essay is of kwrank.filter return form
-    def vectorize(self, essay_1):
+    def vectorize(self, essay):
         d = self.essaytodict(essay)
         return [float(d.get(i, 0)) for i in self.bagofwords]
 
