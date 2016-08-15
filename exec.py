@@ -40,7 +40,7 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 150
+    train_len =250
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
