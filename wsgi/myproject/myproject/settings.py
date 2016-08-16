@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.media',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -162,7 +163,7 @@ STATIC_URL = '/static/'
 if on_openshift:
     STATIC_ROOT = os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'static')
 else:
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(os.environ['PWD'],'../static/'),]
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"), os.path.join(BASE_DIR,'../static/'),]
 
 # REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),

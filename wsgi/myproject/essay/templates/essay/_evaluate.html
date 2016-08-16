@@ -1,5 +1,7 @@
+<br>
 <form class="form-horizontal" role="form" method="POST" action="" id="essay-evaluate-form">
    {% csrf_token %}
+   <input name="essayModel_id" value="{{essayModel.pk}}" hidden>
    <div id="show-form-response"></div>
    {% if flash == True %}
    <div class="alert {{alert}}">
@@ -9,8 +11,8 @@
    {% endif %}
    <div class="form-group">
        <!--<label class="control-label col-sm-2" for="essay_text">Write Essay Here : </label>-->
-       <div class="col-sm-offset-2 col-sm-8">
-           <textarea id="essay-text" class="form-control" rows="13" required="true" style="resize:none" type="text" name="essay_text" placeholder="Write Essay Here">{{ essay_text}}</textarea>
+       <div class="col-sm-offset-1 col-sm-10">
+           <textarea id="essay-text" class="form-control" maxlength="3000" rows="13" required="true" style="resize:none" type="text" name="essay_text" placeholder="Write Essay Here">{{ essay_text}}</textarea>
        </div>
    </div>
    <div class="col-sm-offset-2 col-sm-8">

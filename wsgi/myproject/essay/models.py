@@ -103,6 +103,16 @@ class CronJob(models.Model):
         print("Model dumped\n")
         self.status = '2'
         self.save()
+        # Word Cloud Generation
+        from wordcloud import WordCloud
+        bagofwords = {
+                'hello':12,
+                'no' : 13,
+                }
+        bagofwords = tuple(bagofwords.items())
+        wc = WordCloud(max_words=1000, margin=10, max_font_size=40)
+        wc.generate_from_frequencies(bagofwords)
+        wc.to_file(model_directory+'/'+model_name+'/'+'wordcloud.png')
         # except:
             # self.status = '3'
             # self.save()
@@ -137,7 +147,7 @@ def post_generate_model(sender, **kwargs):
 class Essay(models.Model):
     user = models.ForeignKey(User, related_name='essays')
     essaymodel = models.ForeignKey(EssayModel, related_name='essays')
-    text = models.CharField(max_length=500)
+    text = models.CharField(max_length=3000)
     predicted_mark = models.IntegerField()
     original_mark = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

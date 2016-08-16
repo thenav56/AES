@@ -1,31 +1,116 @@
 // AJAX for posting
 function evaluate_essay() {
     $.ajax({
-        url : "", // the endpoint
+        url : "/essay/evalute_essay_text", // the endpoint
         type : "POST", // http method
         headers: { "X-CSRFToken": getCookie("csrftoken") },
-        data : { essay_text : $('#essay-text').val() }, // data sent with the post request
+        data : $('#essay-evaluate-form').serialize(), // data sent with the post request
 
         // handle a successful response
         success : function(json) {
-            show_form_response = ''
+            var show_form_response = ''
             if (json.error != undefined){
                 show_form_response = `
-                    <div class='text-center alert alert-danger'>
-                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                        <strong>Error!</strong>
-                        ${json.error}
-                    </div>`;
+<div class="modal fade " id="result-lg" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+
+        <div class='text-center alert alert-danger'>
+            <div class="content">
+                <strong><font size="12px">${json.error_code} Error</font></strong>
+                <p><font size="3px">${json.error}</font></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+                    `;
             }else{
                 show_form_response = `
-                    <div class='text-center alert ${json.alert}'>
-                        <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
-                        <strong>${json.scored_message}</strong>
-                        You Have Scored Marks of : ${json.marks_scored}
-                    </div>`;
+<div class="modal fade " id="result-lg" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+
+        <div class='text-center alert ${json.alert}'>
+            <div class="content">
+                <strong><font size="12px">${json.scored_message}</font></strong>
+            </div>
+        </div>
+
+    <div class="modal-content">
+        <div class="modal-body">
+            <h4>Summary</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    Grammer
+                </div>
+                <div class="col-lg-6">
+                    <div class="progress" style="">
+                      <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
+                      aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                        <span class="sr-only">60%</span>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    Spell Correction
+                </div>
+                <div class="col-lg-6">
+                    <div class="progress" style="">
+                      <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
+                      aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                        <span class="sr-only">60%</span>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    Bag Of Words
+                </div>
+                <div class="col-lg-6">
+                    <div class="progress" style="">
+                      <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
+                      aria-valuemin="0" aria-valuemax="100" style="width: 10%;">
+                        <span class="sr-only">60%</span>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                   <h1>${json.marks_scored}</h1><span class="glyphicon glyphicon-certificate"></span>
+                   <h3>Final Score</h3>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+  </div>
+</div>
+                    `;
+
+                show_form_response = `
+<div class="modal fade " id="result-lg" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+
+        <div class='text-center alert ${json.alert}'>
+            <div class="content">
+                <strong><font size="12px">Submitted</font></strong>
+            </div>
+        </div>
+
+    </div>
+</div>
+                    `;
+
                 //$('#essay-text').val(''); // remove the value from the input
             }
-            $("#show-form-response").append(show_form_response);
+            $("#show-form-response").html(show_form_response);
+            $("#result-lg").modal('show');
         },
 
         // handle a non-successful response
@@ -39,7 +124,9 @@ function evaluate_essay() {
 };
 
 // Submit post on submit
-$('#essay-evaluate-form').on('submit', function(event){
-    event.preventDefault();
-    evaluate_essay();
+$(document).ready(function() {
+    $('#essay-evaluate-form').on('submit', function(event){
+        event.preventDefault();
+        evaluate_essay();
+    });
 });

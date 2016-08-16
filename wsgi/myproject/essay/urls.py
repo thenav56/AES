@@ -12,8 +12,12 @@ urlpatterns = [
     url(r'^search', views.search, name='search'),
     url(r'^update_submitted_essay_score',
         views.essay_original_submit, name='update_submitted_essay_score'),
+    url(r'^evalute_essay_text',
+        views.evalute_essay_text, name='evalute_essay_text'),
     url(r'^$', views.index, name='index'),
     # url(r'^api/', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls')),
+    url(r'^(?P<essayModel_id>[0-9]+)/graph_data$', views.load_graph,
+        name='load_graph'),
     url(r'^(?P<essayModel_id>[0-9]+)/$', views.view, name='detail'),
 ]

@@ -1,0 +1,95 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.section {
+    padding-top: 60px;
+    margin-top: -60px;
+}
+
+footer {
+  width:100%;
+  height:80px;
+  position:absolute;
+  bottom:0;
+  left:0;
+}
+
+div.custom-alert-notify{
+  margin-bottom:-12px;
+  margin-left:25%;
+  margin-right:0%;
+  margin-top:-10px;
+  width:50%;
+}
+
+.page-loading-model {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url("/static/icon/loader.gif")
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .page-loading-model {
+    display: block;
+}
+
+div.alert-update-submitted-essay, div.alert-submit-essay{
+    position: fixed;
+    top: 58px;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    z-index: 1;
+}
+
+.navbar-inverse {
+    background-color: #1b6881;
+    border-color: transparent;
+}
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form{
+    border-color: #1b6881;
+}
+
+@media (max-width: 1199px) {
+    .affix {
+        position: static;
+    }
+    .load-graph{
+    width: 480;
+    height: 400px;
+    }
+}
+
+/*.modal-dialog {*/
+  /*width: 100%;*/
+  /*height: 100%;*/
+  /*padding: 0 1% 1% 1%;*/
+/*}*/
+
+/*.modal-content {*/
+  /*height: auto;*/
+  /*min-height: 100%;*/
+  /*border-radius: 10px;*/
+/*}*/

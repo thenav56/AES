@@ -3,23 +3,14 @@
 {{essayModel.name}}
 {% endblock %}
 
-
-{% block head %}
-<style>
-    div.essay-view p{
-        font-size:18px;
-    }
-</style>
-{% endblock %}
-
 {% block body %}
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-2">
-            <h5 class="text-center">{{essayModel.name}}</h5>
             <!-- Nav tabs -->
-            <ul class="nav nav-pills nav-stacked">
+            <ul class="nav nav-pills nav-stacked" data-spy="affix" >
+            <h5 class="text-center">{{essayModel.name}}</h5>
             <li role="presentation" class="active"><a data-toggle="tab" href="#essayInfo">Info</a></li>
             <li role="presentation"><a data-toggle="tab" href="#essayEvalute">Evalute</a></li>
             <li role="presentation"
@@ -36,8 +27,8 @@
             </ul>
         </div>
 
-        <br>
         <div class="col-lg-10">
+        <br>
             <!-- Tab panes -->
             <div class="tab-content">
                 <div id="essayInfo" class="tab-pane fade in active">
@@ -67,6 +58,8 @@
 <script src="{% static "ajax_setup.js" %}"></script>
 <script src="{% static "essay/evaluate_essay.js" %}"></script>
 <script src="{% static "essay/update_submitted_essay_score.js" %}"></script>
+<script src="{% static "essay/load_graph.js" %}"></script>
+<script src="{% static "essay/graph_functions.js" %}"></script>
 <!--PopOver And Nav-Pills hash show-->
 <script>
     $(document).ready(function(){
@@ -77,93 +70,6 @@
 </script>
 <!-- Plotly.js -->
 <script src="{% static "bower_components/plotlyjs/plotly.js" %}"></script>
-<script>
-    var trace1 = {
-      x: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      y: [3, 6, 3, 8, 6, 7, 9, 8, 12, 10, 12],
-      name: 'Predicted', 
-      marker: {color: 'rgb(55, 83, 109)'}, 
-      type: 'bar'
-    };
-
-    var trace2 = {
-      x: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      y: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      name: 'Original', 
-      marker: {color: 'rgb(26, 118, 255)'}, 
-      type: 'bar'
-    };
-
-    var data = [trace1, trace2];
-
-    var layout = {
-      title: 'Automated Essay Grading',
-      xaxis: {
-          title: 'Score Classes',
-          tickfont: {
-          size: 14, 
-          color: 'rgb(107, 107, 107)'
-        }}, 
-      yaxis: {
-        title: 'Score',
-        titlefont: {
-          size: 16, 
-          color: 'rgb(107, 107, 107)'
-        }, 
-        tickfont: {
-          size: 14, 
-          color: "rgb(107, 107, 107)"
-        }
-      }, 
-      legend: {
-        x: 0, 
-        y: 1.0, 
-        bgcolor: 'rgba(255, 255, 255, 0)',
-        bordercolor: 'rgba(255, 255, 255, 0)'
-      }, 
-      barmode: 'group', 
-      bargap: 0.15, 
-      bargroupgap: 0.1
-    };
-
-    Plotly.newPlot('myDiv1', data, layout);  </script>
-</script>
-<script>
-
-
-var trace1 = {
-  x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-  y: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-  type: 'scatter'
-};
-var trace2 = {
-  x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-  y: [0, 1, 4, 3.83, 5, 8, 9, 8],
-  name: 'ROC Curve',
-  type: 'scatter'
-};
-var data = [trace1, trace2];
-var layout = {
-  title: 'False Positive Rate',
-  xaxis: {
-    title: 'x Axis',
-    titlefont: {
-      family: 'Courier New, monospace',
-      size: 18,
-      color: '#7f7f7f'
-    }
-  },
-  yaxis: {
-    title: 'True Positive Rate',
-    titlefont: {
-      family: 'Courier New, monospace',
-      size: 18,
-      color: '#7f7f7f'
-    }
-  }
-};
-Plotly.newPlot('myDiv2', data, layout);
-</script>
 <script>
     var trace1 = {
         x: [1,2,3,4,5],

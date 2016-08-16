@@ -12,7 +12,7 @@ from .models import EssayModel, CronJob, Essay
 
 # Helper function for  index and search
 def essayset_paginator(request, essaysets):
-    paginator = Paginator(essaysets, 20)
+    paginator = Paginator(essaysets, 10)
     page = request.GET.get('e_page')
 
     try:
@@ -127,60 +127,137 @@ def view(request, essayModel_id):
 
             return render(request, 'essay/detail.html', context)
 
-        elif request.method == 'POST':
-            essay_text = request.POST.get('essay_text')
-
-            if essayModel.cronjob.get_status_display() == 'finished':
-                t = essayModel.evalute(essay_text)
-            else:
-                context = { 'error': 'Model status is not finished, Try Again\
-                            Later' }
-                return HttpResponse(json.dumps(context),
-                                    content_type="application/json")
-
-            if request.user.is_authenticated():
-                try:
-                    essay_submit = Essay.objects.filter(user=request.user,
-                                                      essaymodel=essayModel).first()
-                    if essay_submit is None:
-                        essay_submit = Essay(user=request.user, essaymodel=essayModel,
-                                             predicted_mark=t, text=essay_text)
-                    else:
-                        essay_submit.text = essay_text
-                    essay_submit.save()
-                except IntegrityError as e:
-                    pass
-
-            alert = "alert-success" if t >= 4.8 else "alert-warning"
-            scored_message = "Nice Work" if t >= 4.8 else "Need More Effort"
-            context = {
-                        'marks_scored': t,
-                        'alert': alert,
-                        'scored_message': scored_message
-                    }
-
-            return HttpResponse(json.dumps(context),
-                                content_type="application/json"
-                            )
-
     except EssayModel.DoesNotExist:
         raise Http404("Essay Model does not Exist")
 
 
+def evalute_essay_text(request):
+    if request.method == 'POST':
+        essayModel_id = request.POST.get('essayModel_id')
+        try:
+            essayModel = EssayModel.objects.get(pk=essayModel_id)
+        except EssayModel.DoesNotExist:
+            context = { 'error': 'EssayModel DoesNotExist, Please Refresh\
+                    the page', 'error_code': '404' }
+            return HttpResponse(json.dumps(context),
+                                content_type="application/json")
+        # import time
+        # time.sleep(.4)
+        essay_text = request.POST.get('essay_text')
+
+        if essayModel.cronjob.get_status_display() == 'finished':
+            t = essayModel.evalute(essay_text)
+        else:
+            context = { 'error': 'Model status is not finished, Try Again\
+                    Later', 'error_code': '503' }
+            return HttpResponse(json.dumps(context),
+                                content_type="application/json")
+
+        if request.user.is_authenticated():
+            try:
+                essay_submit = Essay.objects.filter(user=request.user,
+                                                  essaymodel=essayModel).first()
+                if essay_submit is None:
+                    essay_submit = Essay(user=request.user, essaymodel=essayModel,
+                                         predicted_mark=t, text=essay_text)
+                else:
+                    essay_submit.text = essay_text
+                essay_submit.save()
+            except IntegrityError as e:
+                pass
+
+        alert = "alert-success" if t >= 4.8 else "alert-warning"
+        scored_message = 'Nice Work <span class="glyphicon\
+                         glyphicon-thumbs-up"></span>' \
+                         if t >= 4.8 else "Need More Effort"
+        context = {
+                    'marks_scored': t,
+                    'alert': alert,
+                    'scored_message': scored_message
+                }
+
+        return HttpResponse(json.dumps(context),
+                            content_type="application/json"
+                        )
+
 def essay_original_submit(request):
     response = 'Invalid Request'
-    if request.method == 'POST':
+    alert = 'danger'
+    if request.method == 'POST' and request.user.is_superuser:
         essayID = request.POST['essayID']
         essay = Essay.objects.get(pk=essayID)
         if essay:
             original_mark = request.POST['o_mark']
             essay.original_mark =  original_mark
             essay.save()
-            response = 'Submitted'
+            response = 'Updated'
+            alert = 'success'
         else:
             response = 'Essay Does Not Exist'
 
-    context = { 'response': response }
+    context = { 'response': response, 'alert': alert }
+    return HttpResponse(json.dumps(context),
+                        content_type="application/json")
+
+
+def load_graph(request, essayModel_id):
+    context = {'error' : 'Unknown Method'}
+    # import time
+    # time.sleep(0.5)
+    if request.method == 'POST':
+        graph_name = request.POST.get('graph_name')
+        essayModel = EssayModel.objects.get(pk=essayModel_id)
+        if graph_name == 'HISTOGRAM':
+           context = {
+                    'predicted_x':[2,3,4,5,6,7,8,9,10,11,
+                                   12],
+                    'predicted_y':[7,8,7,7,8,8,3,4,9,4,
+                                   6],
+                    'original_x':[2,3,4,5,6,7,8,9,10,11,
+                                   12],
+                    'original_y':[8,8,7,8,8,8,3,4,7,4,
+                                  7]
+                    }
+
+        elif graph_name == 'HISTOGRAM-casestudy':
+            context = {
+                    'predicted_x':[1,2,3,4,5,6,7,8,9,10,11,
+                                   12,13,14,15,16,17,18,19,20],
+                    'predicted_y':[8,7,8,7,7,8,8,3,4,9,4,
+                                   6,3,7,6,10,8,6,4,4],
+                    'original_x':[1,2,3,4,5,6,7,8,9,10,11,
+                                   12,13,14,15,16,17,18,19,20],
+                    'original_y':[8,8,8,7,8,8,8,3,4,7,4,
+                                  7,4,5,8,9,7,6,4,3],
+                    }
+        elif graph_name == 'ROC':
+            context = {
+                    'original_x':[0,1,2,3,4,5,6,7,8,9,10,11,
+                                   12,13,14,15,16,17,18,19,20],
+                    'original_y':[0,8,4,7,9,6,8,20,18,22,14,12,
+                                  18,19,16,18,19,20,22,21,20],
+                    }
+        elif graph_name == 'SCATTER':
+            context = {
+                    'class_data':[{
+                'x_data':[0,1,2,3,4,5,6,7,8,9,10,11,
+                       12,13,14,15,16,17,18,19,20],
+                'y_data':[8,8,8,7,8,8,8,3,4,7,4,
+                         7,4,5,8,9,7,6,4,3]
+                },
+            {
+                'x_data':[0,1,2,3,4,5,6,7,8,9,10,11,
+                       12,13,14,15,16,17,18,19,20],
+                'y_data':[8,7,8,7,7,8,8,3,4,9,4,
+                        6,3,7,6,10,8,6,4,4]
+                },
+            {
+                'x_data':[0,1,2,3,4,5,6,7,8,9,10,11,
+                       12,13,14,15,16,17,18,19,20],
+                'y_data':[7,4,5,8,9,7,6,8,8,8,7,8,8,
+                        8,3,4,7,4,4,3]
+                                },]
+            }
     return HttpResponse(json.dumps(context),
                         content_type="application/json")
 

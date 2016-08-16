@@ -6,35 +6,12 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>AES | {% block title %}{% endblock %}</title>
 
+        <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css"  %}">
         <link rel="stylesheet" href="{% static "bower_components/bower-bootswatch-paper/css/paper.css"  %}">
+        <link rel="stylesheet" href="{% static "main.css"  %}">
+
 
         <style>
-            html {
-              position: relative;
-              min-height: 100%;
-            }
-            body {
-                padding-top: 70px;
-                padding-bottom: 70px;
-            }
-            .section {
-                padding-top: 60px;
-                margin-top: -60px;
-            }
-            footer {
-              width:100%;
-              height:80px;
-              position:absolute;
-              bottom:0;
-              left:0;
-            }
-            div.custom-alert-notify{
-              margin-bottom:-12px;
-              margin-left:25%;
-              margin-right:0%;
-              margin-top:-10px;
-              width:50%;
-            }
 
             {% assign nav_pills_color "#2196f3" %}
             .nav-pills > li.active > a, .nav-pills > li.active > a:focus {
@@ -43,6 +20,7 @@
             .nav-pills > li.active > a:hover {
                 background-color: {{nav_pills_color}};
             }
+
         </style>
         {% block head %}{% endblock %}
 
@@ -79,7 +57,9 @@
                         <div class="form-group">
                             <input class="form-control" placeholder="Search" type="text" name="query" value="{{query}}">
                         </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
+                        <button type="submit" class="btn btn-default">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user.is_superuser %}
@@ -140,10 +120,13 @@
             </div>
     </footer>
 
+    <div class="page-loading-model"><!-- Paging Loading Animation --></div>
     </body>
 
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "auto_alert_close.js" %}"></script>
+    <script src="{% static "page_loading.js" %}"></script>
     {% block bottom %}
     {% endblock %}
 </html>

@@ -13,3 +13,5 @@ wsgi/myproject/env/
 wsgi/static/bower_components
 wsgi/myproject/db.sqlite3
 dump.json
+wsgi/myproject/users.txt
+wsgi/myproject/addUser.py

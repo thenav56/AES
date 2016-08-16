@@ -3,9 +3,11 @@
     {% if previous_user_essay.paginator.count %}
 
             {% for essay in previous_user_essay %}
-            <div class="essay-view well">
+            <div class="">
                 <h6 class="text-right">Date: {{essay.created_at}}</h6>
+                <blockquote>
                 <p>{{essay.text}}</p>
+                </blockquote>
             </div>
             {% endfor %}
 
