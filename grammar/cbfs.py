@@ -1,16 +1,18 @@
 import math
+import nltk
 import numpy as np
+from ftransform import BaseFeatureTransform
+import time
+from .cspell.spell_corrector import cspell
 
 
-class Cbfs:
-    def __init__(self, bag, vector, score):
-        self.bagofwords = bag
-        self.idf_vector = vector
+class Cbfs(BaseFeatureTransform):
+    def __init__(self):
+        super(Cbfs, self).__init__()
+        self.idf_vector = None
         #may need to calculate the transpose
-        self.score = score
         self.rff = None
         self.rcf = None
-        self.autofn()
 
     #initiate a matrix of zeros
     def autofn(self):
@@ -33,8 +35,11 @@ class Cbfs:
         sxx= n*sumx2 - sumx**2
         syy = n*sumy2 - sumy**2
         sxy = n*sumxy - sumx*sumy
-
-        r = sxy/math.sqrt(sxx*syy)
+        den = math.sqrt(sxx*syy) 
+        if( den == 0):
+            r = 0
+        else:
+            r = sxy/math.sqrt(sxx*syy)
         return r
 
     #feature-feature correlation
@@ -85,14 +90,45 @@ class Cbfs:
 
     def freq_vector(self):
         f_vector = []
-        for each in self.tokenizedEssays:
-            count = [0] * len(bagofwords)
-            for i in range(len(bagofwords)):
+        for essay in self.tokenized:
+            count = [0] * len(self.bagofwords)
+            for i in range(len(self.bagofwords)):
                 for line in essay:
                     for word in line:
-                        if word[0] in bagofwords:
-                            index = bagofwords.index(word[0])
+                        if word[0] in self.bagofwords:
+                            index = self.bagofwords.index(word[0])
                             count[index] += 1
             f_vector.append(count)
-        self.idf_vector = list(zip(i for i in f_vector))
+        self.idf_vector = list(map(list,zip(*f_vector)))
+    '''
+    def parameters_from_essays(self):
+        super(Cbfs, self).parameters_from_essays()
+        self.autofn()
+        t = time.time()
+        self.freq_vector()
+        self.compute_rcf()
+        self.compute_rff()
+        print(time.time() -t)
+        print("length of bagofwords",len(self.bagofwords))
+        self.ft_reduce(50)
+        print("length of reduced bagofwords", len(self.bagofwords))
+        print(time.time() - t)
+        input()
+        '''
+    def word_count(self, essay):
+        lines = nltk.sent_tokenize(essay)
+        lines = [nltk.word_tokenize(i) for i in lines]
+        num_word = 0
+        for line in lines:
+            num_word += len(line)
+        self.num_words.append(num_word)
+
+    def vectorize(self,essay):
+        r = super(Cbfs, self).vectorize(essay)
+        num_words = 0
+        for each in r:
+            num_words = len(each)
+        r.append(float(num_words))
+        return r
+
 

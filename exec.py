@@ -3,35 +3,9 @@
 from model import EssayModel
 from model import load_from_file
 from ftransform import BaseFeatureTransform
+from cbfs import Cbfs
+from grammar.evaluate import Evaluate
 import time
-
-def mlda(el):
-    w = set()
-    for i in el:
-        for j in i:
-            w.add(j)
-
-    idw = {}
-    c = 0
-    for i in w:
-        idw[c] = i
-        c += 1
-
-    corp = []
-    for i in el:
-        r = []
-        for j in range(c):
-            if idw[j] in i:
-                r.append((j, i.count(idw[j])))
-        corp.append(r)
-
-    lda_model = gensim.models.LdaModel(corp, num_topics=4, id2word=idw, passes=14)
-    bgw = set()
-    for i in range(lda_model.num_topics):
-        t = lda_model.show_topic(i)
-        for j in t:
-            bgw.add(j[1])
-    return list(bgw)
 
 def main():
     from openpyxl import load_workbook
@@ -41,7 +15,7 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 50
+    train_len = 500
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
@@ -60,11 +34,20 @@ def main():
         else:
             import msvm
             mod = msvm.MSVM()
-        model = EssayModel(mod, BaseFeatureTransform())
+        #feature = BaseFeatureTransform()
+        feature = Cbfs()
+        model = EssayModel(mod, feature)
         model.train(train_essay, train_score, mins, maxs)
         model.score(test_essay, test_score)
         #model.dump('c2.model')
         #print("Model dumped\n")
+    ev = Evaluate()
+    ev.calc_confusion(model.target, model.predicted, 2, 12)
+    ev.ROC_parameters()
+    print(ev.confusion)
+    print(ev.roc)
+
+
     print("Total time", time.time() - s)
     input('enter..')
     while True:

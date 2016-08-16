@@ -334,16 +334,18 @@ class cspell:
         print("total potential errors found: %i" % corrected_word_count)
 
         return
-
-    def check(self, word):
+    
+    def check(self, word, correct=True):
         start_time = time.time()
+        sugg = False
         if word in self.dictionary:
             sugg = True
-        else:
+        elif correct:
             sugg = self.get_suggestions(word)
             sugg = sugg[0]
+        else:
+            return sugg
         run_time = time.time() - start_time
-        print('%.5f seconds to run' % run_time)
         return sugg
 
 

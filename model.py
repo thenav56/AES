@@ -11,8 +11,10 @@ class EssayModel:
 
         self.model = model
         self.ftransform = feature_transform
+        self.predicted = []
 
     def score(self, datasets, targets):
+        self.target = targets
         acc = 0
         sum_a = 0
         sum_p = 0
@@ -28,6 +30,7 @@ class EssayModel:
         for i, j in enumerate(datasets):
             v = self.ftransform.getTransformed([j])[0]
             p = self.model.predict([v])[0]
+            self.predicted.append(p)
             predict[p] += 1
             actual[targets[i]] += 1
             acc += p == targets[i]

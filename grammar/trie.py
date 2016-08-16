@@ -32,8 +32,8 @@ class Trie:
 
     def Search(self, key):
         if(self.Count(key) > 0):
-            return True
-        return False
+            return 1
+        return 0
 
     def Count(self, key):
         return self.SearchAgain(self.root, key, 0, 0)
