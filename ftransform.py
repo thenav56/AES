@@ -17,6 +17,7 @@ class BaseFeatureTransform:
         self.data_set = None
         self.tokenized = None
         self.bagofwords = None
+        self.bagcount = None
         self.spellCorr = loadspellcorrector()
 
     def setDataSet(self, data_set, score):
@@ -86,6 +87,15 @@ class BaseFeatureTransform:
             for i in ns:
                 self.bagofwords += i
             self.bagofwords = list(set(self.bagofwords))
+            count = {}
+            print(self.bagofwords)
+            for i in s:
+                for j in i:
+                    for k in j:
+                        if k[0] in self.bagofwords:
+                            count[k[0]] = count.get(k[0],0) + 1
+            self.bagcount = count
+
             
     def essaytodict(self, essay):
         d = {}
