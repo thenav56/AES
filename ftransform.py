@@ -88,7 +88,6 @@ class BaseFeatureTransform:
                 self.bagofwords += i
             self.bagofwords = list(set(self.bagofwords))
             count = {}
-            print(self.bagofwords)
             for i in s:
                 for j in i:
                     for k in j:
