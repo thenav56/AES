@@ -1,0 +1,16 @@
+Ashwin kafle
+
+       Effects of computer in our life
+
+A computer is a electronic machine which takes data and instructions as a input, processes it and gives meaningful result to the user. A computer follows the GIGO(Garbage in Garbage out) rule which means that if the inut is entered wrong on the computer, the output also comes wrong.A computer has many effects on our daily life. some are positive as well as some are negative. there are various sectors of uses in our daily life. there are different types of computer(analog, digital and hybrid are the types of computer based on their working status). 
+
+There  are many benifits of computer. some of it includes that we can communicate with each other who are very far from us on our computer netwrock. we can do various tasks very rapidly and easily with the help of computue programs developed by computer programmers. We can do online booking and shopping from the computer. We can even do online banking through our computer.
+
+There are some disadvantages of computer too. The security and privacy of people is at risk due to the various hackers. they even steal our money from our bank accounts to their own account. Long
+explouser to computer harm our eyes and body parts as we sit all the time while doing our work.
+ 
+There are different types of computer . They are classifed according to their work processes. For eg, hybrid, analog and digital computers are classified according to the data types they process. the digital computer process the data in 0s and 1s form wheras analog computer processes the data according to the physical and structural change. And the hybrid computer combines the features of both analog and digital computer.
+
+There are many types of softwares we use in our computer. Those software are developed by programmer so that we can do our work with our own computer in an efficient way. But there are some programmers who develop softwares to harm our files and folders. Those softwares are kown as viruses.
+
+Thus, there are many advantages and disadvantages of computer,we should focus on the advantage more and try to minimize thedisadvantages. we should try not to harm others by using our computers.  

@@ -1,4 +1,16 @@
-#!/bin/python
+#!/usr/bin/python3
+
+def loadfiles():
+    with open('files', 'r') as f:
+        r = []
+        for i in f:
+            if i:
+                if i[-1:] == '\n':
+                    i = i[:-1]
+                if i[-1:] != '~':
+                    r += i,
+        return r
+    return []
 
 from model import EssayModel
 from model import load_from_file
@@ -8,6 +20,13 @@ from grammar.evaluate import Evaluate
 import time
 import matplotlib.pyplot as plot
 
+def empty(s):
+    import string
+    for i in s:
+        if i.lower() in string.ascii_lowercase:
+            return False
+    return True
+
 def main():
     from openpyxl import load_workbook
     wb = load_workbook('train.xlsx')
@@ -16,48 +35,37 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 500
+    train_len = 1200
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
     test_score = score[train_len:]
     s = time.time()
-    load = False
     mins = min(score)
     maxs = max(score)
-    if load:
-        model = load_from_file('c2.model')
-    else:
-        sk = True
-        if sk:
-            from sklearn import svm
-            mod = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
-        else:
-            import msvm
-            mod = msvm.MSVM()
-        #feature = BaseFeatureTransform()
-        feature = Cbfs()
-        model = EssayModel(mod, feature)
-        model.train(train_essay, train_score, mins, maxs)
-        model.score(test_essay, test_score)
-        #model.dump('c2.model')
-        #print("Model dumped\n")
-    ev = Evaluate()
-    ev.calc_confusion(model.target, model.predicted, 2, 12)
-    ev.ROC_parameters()
-    roc = ev.roc
-    labels = ['Class{0}'.format(i) for i in range(2,12)]
-    fig = plot.figure()
-    ax = fig.add_subplot(111)
-    plot.plot(roc[0], roc[1], 'ro')
-    plot.plot([0,1],[0,1],'k-', lw=2)
-    for label, x, y in zip(labels, roc[0], roc[1]):
-        ax.annotate(
-                label,
-                xy = (x,y), xytext = (-20,20), textcoords='offset points')
-    plot.show()
-    
-
+    names = loadfiles()
+    essay_list = []
+    for i in names:
+        with open('g8/' + i, 'r') as f:
+            name = None
+            title = None
+            core = ""
+            for i in f:
+                if not empty(i):
+                    if name == None:
+                        name = i
+                    elif title == None:
+                        title = i
+                    else:
+                        core += i
+            essay_list.append([name, core])
+    for i in essay_list:
+        print(i)
+    model = load_from_file('pinnacle.model')
+    for i in essay_list:
+        print(i[0], 'scores', model.predict([i[1]]))
+        input('...')
+    #model.score(test_essay, test_score)
     print("Total time", time.time() - s)
     input('enter..')
     while True:

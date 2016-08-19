@@ -227,7 +227,8 @@ class Cbfs(BaseFeatureTransform):
             wc = self.word_count(essays[pos])
             #normalize term frequency
             for j in range(len(i)):
-                i[j] = i[j]
+                #i[j] = 0
+                pass
             a.append(self.grammar_count(essays[pos]))
             a.append(self.spell_count(essays[pos]))
             #a.append(wc)

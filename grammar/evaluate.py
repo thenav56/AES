@@ -74,7 +74,8 @@ class Evaluate:
         for i in range(self.startscore, self.endscore):
             tpr.append(self.TPR(i))
             fpr.append(self.FPR(i))
-        data = list(zip(fpr,tpr))
+        #data = list(zip(fpr,tpr))
+        data = [fpr, tpr]
         self.roc = data
             
         
