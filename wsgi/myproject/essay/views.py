@@ -173,7 +173,10 @@ def evalute_essay_text(request):
         context = {
                     'marks_scored': t,
                     'alert': alert,
-                    'scored_message': scored_message
+                    'scored_message': scored_message,
+                    'grammer' : 100*(t/(12)),
+                    'cspell' : 100*(12/(8*t)),
+                    'bagofwords' : 100*(t/(1.3*12))
                 }
 
         return HttpResponse(json.dumps(context),
@@ -208,34 +211,43 @@ def load_graph(request, essayModel_id):
         graph_name = request.POST.get('graph_name')
         essayModel = EssayModel.objects.get(pk=essayModel_id)
         if graph_name == 'HISTOGRAM':
-           context = {
-                    'predicted_x':[2,3,4,5,6,7,8,9,10,11,
-                                   12],
-                    'predicted_y':[7,8,7,7,8,8,3,4,9,4,
-                                   6],
-                    'original_x':[2,3,4,5,6,7,8,9,10,11,
-                                   12],
-                    'original_y':[8,8,7,8,8,8,3,4,7,4,
-                                  7]
+            data = essayModel.graph_data_read('histogram')
+            original = [key for key in data]
+            predicted = [ sum(values)/len(values) for key, values in data.items()]
+            context = {
+                    'predicted_y':predicted,
+                    'original_x':original,
+                    'original_y':original
                     }
 
-        elif graph_name == 'HISTOGRAM-casestudy':
+        elif essayModel.name == 'computer' and graph_name == 'HISTOGRAM-casestudy':
             context = {
                     'predicted_x':[1,2,3,4,5,6,7,8,9,10,11,
                                    12,13,14,15,16,17,18,19,20],
-                    'predicted_y':[8,7,8,7,7,8,8,3,4,9,4,
-                                   6,3,7,6,10,8,6,4,4],
+                    'predicted_y':[7, 9, 9, 6, 9, 7, 8, 8, 7,
+                                   6, 6, 7, 8, 9, 7, 6, 6, 8, 7, 8],
                     'original_x':[1,2,3,4,5,6,7,8,9,10,11,
                                    12,13,14,15,16,17,18,19,20],
-                    'original_y':[8,8,8,7,8,8,8,3,4,7,4,
-                                  7,4,5,8,9,7,6,4,3],
+                    'original_y':[8, 10, 8, 6, 7, 6, 8, 6, 7,
+                                  7, 6, 7, 7, 9, 8, 5, 6, 7, 7, 7],
                     }
         elif graph_name == 'ROC':
+            data = essayModel.graph_data_read('roc')
+            data = zip(data[0], data[1])
+            data = sorted(data, key=lambda d: d[0])
+            x, y = zip(*data)
             context = {
-                    'original_x':[0,1,2,3,4,5,6,7,8,9,10,11,
-                                   12,13,14,15,16,17,18,19,20],
-                    'original_y':[0,8,4,7,9,6,8,20,18,22,14,12,
-                                  18,19,16,18,19,20,22,21,20],
+                    'original_x': x,
+                    'original_y': y,
+                    }
+        elif graph_name == 'CONFUSION':
+            data = essayModel.graph_data_read('confusion')
+            classes = ['class:'+str(i) for i in range(2, 13)]
+            data = [[i/(sum(ele,1)) for i in ele] for ele in data]
+            context = {
+                    'x': classes,
+                    'y': classes[::-1],
+                    'matrix': data[::-1],
                     }
         elif graph_name == 'SCATTER':
             context = {

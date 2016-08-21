@@ -8,6 +8,7 @@ function load_graph(div_id, graph_name) {
 
         // handle a successful response
         success : function(json) {
+            $('#'+div_id).css({'width': '960px', 'height': '400px'})
             if(graph_name == 'HISTOGRAM'){
                 render_histogram(div_id, json)
             }else if(graph_name == 'ROC'){
@@ -15,7 +16,13 @@ function load_graph(div_id, graph_name) {
             }else if(graph_name == 'SCATTER'){
                 render_scatter(div_id, json)
             }else if(graph_name == 'HISTOGRAM-casestudy'){
-                render_histogram_casestudy(div_id, json)
+                if(json.error != undefined){
+                    $('#'+div_id).css({'width': '0px', 'height': '0px'})
+                }else{
+                    render_histogram_casestudy(div_id, json)
+                }
+            }else if(graph_name == 'CONFUSION'){
+                render_confusion(div_id, json)
             };
         },
 
@@ -34,5 +41,6 @@ $(document).ready(function() {
     load_graph("graph_1", 'HISTOGRAM');
     load_graph("graph_2", 'ROC');
     load_graph("graph_3", 'SCATTER');
-    //load_graph("graph_4", 'HISTOGRAM-casestudy');
+    load_graph("graph_4", 'HISTOGRAM-casestudy');
+    load_graph("graph_5", 'CONFUSION');
 });

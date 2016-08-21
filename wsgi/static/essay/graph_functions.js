@@ -1,6 +1,6 @@
 function render_histogram(div_id, resp_data){
     var trace1 = {
-      x: resp_data.predicted_x,
+      x: resp_data.original_x,
       y: resp_data.predicted_y,
       name: 'Predicted',
       marker: {color: 'rgb(55, 83, 109)'}, 
@@ -18,7 +18,7 @@ function render_histogram(div_id, resp_data){
     var data = [trace1, trace2];
 
     var layout = {
-      title: 'Automated Essay Grading',
+      title: 'Original Vs Predicted Histogram',
       xaxis: {
           title: 'Score Classes',
           tickfont: {
@@ -52,11 +52,13 @@ function render_histogram(div_id, resp_data){
 
 function render_roc(div_id, resp_data){
     var trace1 = {
-      x: [0, resp_data.original_x.length-1],
-      y: [0, resp_data.original_x.length-1],
+      x: [0, 1],
+      y: [0, 1],
       name: 'Good',
       type: 'scatter'
     };
+    resp_data.original_x.push(1)
+    resp_data.original_y.push(1)
     var trace2 = {
       x: resp_data.original_x,
       y: resp_data.original_y,
@@ -151,7 +153,7 @@ function render_histogram_casestudy(div_id, resp_data){
     var data = [trace1, trace2];
 
     var layout = {
-      title: 'Automated Essay Grading (Case Study)',
+      title: 'Pinnacle School Case Study',
       xaxis: {
           title: 'Students',
           tickfont: {
@@ -183,3 +185,35 @@ function render_histogram_casestudy(div_id, resp_data){
     Plotly.newPlot(div_id, data, layout);
 };
 
+function render_confusion(div_id, json){
+
+    var data = [
+      {
+        x: json.x,
+        y: json.y,
+        z: json.matrix,
+        colorscale: "Jet", 
+        name: "trace0", 
+        type: "heatmap"
+      }
+    ];
+
+    var layout = {
+      barmode: "overlay", 
+      title: "Confusion Matrix", 
+      xaxis: {
+        title: "Predicted value", 
+        titlefont: {
+          size: 18
+        }
+      }, 
+      yaxis: {
+        title: "True Value", 
+        titlefont: {
+          size: 18
+        }
+      }
+    };
+
+    Plotly.plot(div_id, data, layout);
+};

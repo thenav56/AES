@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>AES | {% block title %}{% endblock %}</title>
+        <title>AEGS | {% block title %}{% endblock %}</title>
 
         <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css"  %}">
         <link rel="stylesheet" href="{% static "bower_components/bower-bootswatch-paper/css/paper.css"  %}">
@@ -41,7 +41,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'index'  %}">AES<font size="1px">(BETA)</font></a>
+                <a class="navbar-brand" href="{% url 'index'  %}">AEGS<font size="1px">(BETA)</font></a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -62,6 +62,9 @@
                         </button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="{% url 'essay:index' %}">Essay List</a>
+                    </li>
                     {% if request.user.is_superuser %}
                     <li>
                         <a href="{% url 'admin:index' %}">Admin</a>

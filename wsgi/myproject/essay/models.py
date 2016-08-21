@@ -4,9 +4,11 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib.auth.models import User
 from django.db import models
 import datetime
+import os
 import sys
+import json
 
-sys.path.append(settings.BASE_DIR+'/essay/classifier')
+# sys.path.append(settings.BASE_DIR+'/essay/classifier')
 
 
 def get_File_Name(self, filename):
@@ -39,11 +41,44 @@ class EssayModel(models.Model):
         # self.generate_model()
         # return super(EssayModel, self).save(*args, **kwargs)
     def evalute(self, essay_text):
+        sys.path.append(settings.BASE_DIR+'/essay/classifier')
         from model import load_from_file
         name = self.name.lower()
-        model = load_from_file(settings.MEDIA_ROOT+'/model_file/'+name+'/'+self.model_file+'/'+name)
-        t = model.predict([essay_text.split()])[0]
+        _model = load_from_file(os.path.join(settings.MEDIA_ROOT, 'model_file',
+                               name, self.model_file, name))
+        t = _model.predict([essay_text.split()])[0]
         return t
+
+    def graph_data_save(self, field, value):
+        model_directory = os.path.join(settings.MEDIA_ROOT,'model_file',
+                                       self.name.lower(), self.model_file)
+        _data_file = os.path.join(model_directory, 'data_file.json')
+        data = {}
+        try:
+            data_file = open(_data_file, 'r')
+            data = json.loads(data_file.read())
+            data[field] = value
+            data_file.close()
+            data_file = open(_data_file, 'w')
+        except (FileNotFoundError, ValueError) as e :
+            data_file = open(_data_file, 'w')
+            data[field] = value
+        data_file.write(json.dumps(data))
+        data_file.close()
+
+    def graph_data_read(self, field):
+        model_directory = os.path.join(settings.MEDIA_ROOT,'model_file',
+                                       self.name.lower(), self.model_file)
+        _data_file = os.path.join(model_directory, 'data_file.json')
+        try:
+            data_file = open(_data_file, 'r')
+            data = json.loads(data_file.read())
+            if field in data:
+                return data.get(field)
+            else:
+                return None
+        except (FileNotFoundError, ValueError) as e :
+            return None
 
 
 class CronJob(models.Model):
@@ -67,6 +102,7 @@ class CronJob(models.Model):
         return self.CRONSTATUS[int(self.status)][1]
 
     def train(self):
+        sys.path.append(settings.BASE_DIR+'/essay/classifierNew')
         now = datetime.datetime.now()
         self.model_file = str(now.year)+str(now.month)+str(now.day)+str(now.hour)+str(now.minute)
         self.status = '1'
@@ -75,10 +111,11 @@ class CronJob(models.Model):
         essaymodel = EssayModel.objects.get(pk=self.essaymodel.pk)
         from model import EssayModel as esyModel
         from openpyxl import load_workbook
-        import os
-        os.chdir(settings.BASE_DIR+'/essay/classifier/')
+        from cbfs import Cbfs
+        os.chdir(settings.BASE_DIR+'/essay/classifierNew/')
         file_location = essaymodel.train_file
-        model_directory = settings.MEDIA_ROOT+'/model_file/'+essaymodel.name.lower()
+        model_directory = os.path.join(settings.MEDIA_ROOT,'model_file',
+                                       essaymodel.name.lower())
         model_name = essaymodel.model_file
         wb = load_workbook(file_location)
         ws = wb.active
@@ -90,33 +127,56 @@ class CronJob(models.Model):
         train_essay = essay[:train_len]
         train_score = score[:train_len]
         test_essay = essay[train_len:]
-        # test_score = score[train_len:]
-        train_essay = [i.split() for i in train_essay]
-        test_essay = [i.split() for i in test_essay]
-        # model = load_from_file('c2.model')
-        model = esyModel(settings.BASE_DIR +
-                         '/essay/classifier/cspell/files/big.txt')
-        model.train(train_essay, train_score)
+        test_score = score[train_len:]
+        mins = min(score)
+        maxs = max(score)
+        # from model import load_from_file
+        # name = essaymodel.name.lower()
+        # model = load_from_file(os.path.join(settings.MEDIA_ROOT,
+                                # 'model_file', name,
+                                # essaymodel.model_file,name))
+        sk = True
+        if sk:
+            from sklearn import svm
+            mod = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
+        else:
+            import msvm
+            mod = msvm.MSVM()
+        feature = Cbfs()
+        model = esyModel(mod, feature)
+        model.train(train_essay, train_score, mins, maxs)
+        model.score(test_essay, test_score)
         if not os.path.exists(model_directory+'/'+model_name):
             os.makedirs(model_directory+'/'+model_name)
-        model.dump(model_directory+'/'+model_name+'/'+essaymodel.name.lower())
+        # model.dump(model_directory+'/'+model_name+'/'+essaymodel.name.lower())
         print("Model dumped\n")
-        self.status = '2'
-        self.save()
+        # Evaluation of Model
+        from grammar.evaluate import Evaluate
+        ev = Evaluate()
+        ev.calc_confusion(model.target, model.predicted, 2, 12)
+        ev.ROC_parameters()
+        essaymodel.graph_data_save('confusion', ev.confusion.tolist())
+        essaymodel.graph_data_save('roc', ev.roc)
+        essaymodel.graph_data_save('histogram', avg_mark_histogram(model.target,
+                                                                   model.predicted))
+        print("confusion and roc saved")
+
         # Word Cloud Generation
         from wordcloud import WordCloud
-        bagofwords = {
-                'hello':12,
-                'no' : 13,
-                }
+        bagofwords = model.ftransform.bagcount
         bagofwords = tuple(bagofwords.items())
-        wc = WordCloud(max_words=1000, margin=10, max_font_size=40)
+        wc = WordCloud(min_font_size=10, background_color='white',
+                       width=int(1920/2),height=int(1080/2))
         wc.generate_from_frequencies(bagofwords)
-        wc.to_file(model_directory+'/'+model_name+'/'+'wordcloud.png')
-        # except:
+        wc.to_file(os.path.join(model_directory, model_name,'wordcloud.png'))
+        print("wordcloud drawn")
+        self.status = '2'
+        self.save()
+
+        # except Exception as e:
+            # print(e)
             # self.status = '3'
             # self.save()
-
 
 
 @receiver(pre_save, sender=EssayModel)
@@ -160,3 +220,11 @@ class Essay(models.Model):
         return str(self.id)+'Model: '+self.essaymodel.name+', User:\
                '+str(self.user.pk)+', O_mark,P_mark: ('+str(self.original_mark)+',\
                '+str(self.predicted_mark)+')'
+
+def avg_mark_histogram(original, predicted):
+    from collections import defaultdict
+    zipped = zip(original, predicted)
+    data = defaultdict(list)
+    for ori, pred in list(zipped):
+        data[ori].append(int(pred))
+    return data

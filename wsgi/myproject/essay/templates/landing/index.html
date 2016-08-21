@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AEGS</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap and Font Awesome css-->
+    <!-- we use cdn but you can also include local files located in css directory-->
+    <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="{% static 'landing/css/font-awesome.css' %}">
+    <!--<link rel="stylesheet" href="css/font-awesome-animation.min.css">-->
+    <link rel="stylesheet" href="{% static 'landing/css/font-awesome-animation.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <!-- Google fonts - Montserrat for headings, Cardo for copy-->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Montserrat:400,700|Cardo:400,400italic,700">
+    <!-- onepage scroll stylesheet-->
+    <link rel="stylesheet" href="{% static 'landing/css/onepage-scroll.css' %}">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="{% static 'landing/css/style.default.css' %}" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{% static 'landing/css/custom.css' %}">
+    <!-- Favicon-->
+    <!--<link rel="shortcut icon" href="favicon.png">-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="main"> 
+        <!-- page 1-->
+        <section id="page1">
+          <div class="overlay"></div>
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2 col-sm-12">
+                  <h1>Automated Essay Grading System</h1>
+                  <p class="italic">A Platform to Grade Essay Automatically!</p>
+                  <a class="btn btn-top btn-default btn-lg" href="/essay/">View Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="icon faa-float animated"><i class="fa fa-angle-double-down"></i></div>
+        </section>
+        <!-- page 2-->
+        <section id="page2">
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row">
+                <div class="col-md-6"> 
+                  <h2 class="heading">About AEGS</h2>
+                  <p class="lead">Abstract</p>
+                  <p>Essays are crucial testing tools for assessing academic achievement, integration of ideas and ability to recall, but are expensive and time consuming to grade manually. Manual grading of essays takes up a significant amount of instructors' valuable time, and hence is an expensive process. Automated grading, if proven to match or exceed the reliability of human graders, will significantly reduce costs. </p>
+                  <p>The purpose of this project is to implement and train machine learning algorithms to automatically assess and grade essay responses. These grades from the automatic grading system should match the human grades consistently.  Automated Essay Scoring (AES) is a tool that may be able to save teacher time and provide more objective evaluations. There are several successful AES systems for essays in English that are used in large scale tests. Supervised machine learning algorithms are the core component in developing these systems.. </p>
+                </div>
+                <div class="col-md-5 col-md-offset-1">
+                    <p><img src="{% static 'landing/img/about.jpg' %}" alt="" class="img-responsive img-circle"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- page 3 - class section-gray adds gray background-->
+        <section id="page3" class="section-gray">
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row services">
+                <div class="col-md-12">
+                  <h2 class="heading">How It Works!</h2>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-desktop"></i></div>
+                        <h4 class="heading">Webdesign</h4>
+                        <p>Fifth abundantly made Give sixth hath. Cattle creature i be don't them.</p>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-print"></i></div>
+                        <h4 class="heading">Print</h4>
+                        <p>Advantage old had otherwise sincerity dependent additions. It in adapted natural.</p>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-globe"></i></div>
+                        <h4 class="heading">SEO and SEM</h4>
+                        <p>Am terminated it excellence invitation projection as. She graceful shy. </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-lightbulb-o"></i></div>
+                        <h4 class="heading">Consulting</h4>
+                        <p>Fifth abundantly made Give sixth hath. Cattle creature i be don't them.</p>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-envelope-o"></i></div>
+                        <h4 class="heading">Email Marketing</h4>
+                        <p>Advantage old had otherwise sincerity dependent additions. It in adapted natural.</p>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="box">
+                        <div class="icon"><i class="fa fa-user"></i></div>
+                        <h4 class="heading">UX &amp; UI</h4>
+                        <p>Am terminated it excellence invitation projection as. She graceful shy. </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="page4">
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row">
+                <div class="col-md-12">
+                  <h2 class="heading">Portfolio</h2>
+                  <p class="text-center">Pinnacle Case Study Photo Gallery</p>
+                  <div class="row">
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img1.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img2.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img3.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img4.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img5.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="box"><a href="#" title=""><img src="{% static 'landing/img/img6.jpg' %}" alt="" class="img-responsive"></a></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- page 5-->
+        <section id="page5" class="section-gray">
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row">
+                <div class="col-md-12">
+                  <h2 class="heading">Text page</h2>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <p>Able an hope of body. Any nay shyness article matters own removal nothing his forming. Gay own additions education satisfied the perpetual. If he cause manor happy. Without farther she exposed saw man led. Along on happy could cease green oh. </p>
+                      <p>Betrayed cheerful declared end and. Questions we additions is extremely incommode. Next half add call them eat face. Age lived smile six defer bed their few. Had admitting concluded too behaviour him she. Of death to or to being other. </p>
+                    </div>
+                    <div class="col-sm-6">
+                      <p>Effects present letters inquiry no an removed or friends. Desire behind latter me though in. Supposing shameless am he engrossed up additions. My possible peculiar together to. Desire so better am cannot he up before points. Remember mistaken opinions it pleasure of debating. Court front maids forty if aware their at. Chicken use are pressed removed. </p>
+                      <p>Saw yet kindness too replying whatever marianne. Old sentiments resolution admiration unaffected its mrs literature. Behaviour new set existence dashwoods. It satisfied to mr commanded consisted disposing engrossed. Tall snug do of till on easy. Form not calm new fail. </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- page 6-->
+        <section id="page6">
+          <div class="content">
+            <div class="container clearfix">
+              <div class="row">
+                <div class="col-md-12">
+                  <h2 class="heading">Contact</h2>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <form id="contact-form" method="post" action="contact.php" class="contact-form">
+                        <div class="controls">
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <div class="form-group">
+                                <label for="name">Your firstname *</label>
+                                <input type="text" name="name" placeholder="Enter your firstname" required="required" class="form-control">
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="form-group">
+                                <label for="surname">Your lastname *</label>
+                                <input type="text" name="surname" placeholder="Enter your  lastname" required="required" class="form-control">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="surname">Your email *</label>
+                            <input type="email" name="email" placeholder="Enter your  email" required="required" class="form-control">
+                          </div>
+                          <div class="form-group">
+                            <label for="surname">Your message for us *</label>
+                            <textarea rows="4" name="message" placeholder="Enter your message" required="required" class="form-control"></textarea>
+                          </div>
+                          <div class="text-center">
+                            <input type="submit" name="name" value="Send message" class="btn btn-primary btn-block">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="col-md-6">
+                      <p>Effects present letters inquiry no an removed or friends. Desire behind latter me though in. Supposing shameless am he engrossed up additions. My possible peculiar together to. Desire so better am cannot he up before points. Remember mistaken opinions it pleasure of debating. Court front maids forty if aware their at. Chicken use are pressed removed. </p>
+                      <p>Able an hope of body. Any nay shyness article matters own removal nothing his forming. Gay own additions education satisfied the perpetual. If he cause manor happy. Without farther she exposed saw man led. Along on happy could cease green oh. </p>
+                      <!--<p class="social">-->
+                          <!--<a href="#" title="" class="facebook"><i class="fa fa-facebook"></i></a>-->
+                          <!--<a href="#" title="" class="twitter"><i class="fa fa-twitter"></i></a>-->
+                          <!--<a href="#" title="" class="gplus"><i class="fa fa-google-plus"></i></a>-->
+                          <!--<a href="#" title="" class="instagram"><i class="fa fa-instagram"></i></a>-->
+                          <!--<a href="#" title="" class="email"><i class="fa fa-envelope"></i></a>-->
+                      <!--</p>-->
+                    </div>
+                  </div>
+                  <div class="row copyright">
+                    <div class="col-md-6">
+                      <p>&copy;2016 AEGS Team <a href="#" title="" class="github"><i class="fa fa-github"></i></a></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="credit">Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a></p>
+                      <!-- Please do not remove the backlink to us. It is part of the licence conditions. Thanks for understanding :)
+                      -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- Javascript files-->
+    <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'landing/js/jquery.cookie.js' %}"></script>
+    <script src="{% static 'landing/js/jquery.onepage-scroll.js' %}"></script>
+    <script src="{% static 'landing/js/front.js' %}"></script>
+  </body>
+</html>

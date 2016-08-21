@@ -7,13 +7,13 @@ from .models import EssayModel, CronJob, Essay
 
 
 class MyAdminSite(AdminSite):
-    site_header = 'AES administration'
+    site_header = 'AEGS administration'
 
     def __init__(self, *args, **kwargs):
         super(MyAdminSite, self).__init__(*args, **kwargs)
         self._registry.update(admin.site._registry)  # PART 2
 
-admin_site = MyAdminSite(name='aes')
+admin_site = MyAdminSite(name='aegs')
 
 
 # Model Field Widget Change

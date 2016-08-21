@@ -9,8 +9,8 @@ from .forms import loginForm
 
 
 def index(request):
-    return HttpResponseRedirect(reverse('essay:index'))
-    # return render(request, 'myproject/index.html')
+    # return HttpResponseRedirect(reverse('essay:index'))
+    return render(request, 'landing/index.html')
 
 
 def app_login(request):

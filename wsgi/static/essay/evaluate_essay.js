@@ -47,7 +47,7 @@ function evaluate_essay() {
                 <div class="col-lg-6">
                     <div class="progress" style="">
                       <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
-                      aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                      aria-valuemin="0" aria-valuemax="100" style="width: ${json.grammer}%;">
                         <span class="sr-only">60%</span>
                       </div>
                     </div>
@@ -60,7 +60,7 @@ function evaluate_essay() {
                 <div class="col-lg-6">
                     <div class="progress" style="">
                       <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
-                      aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                      aria-valuemin="0" aria-valuemax="100" style="width: ${json.cspell}%;">
                         <span class="sr-only">60%</span>
                       </div>
                     </div>
@@ -73,7 +73,7 @@ function evaluate_essay() {
                 <div class="col-lg-6">
                     <div class="progress" style="">
                       <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="60"
-                      aria-valuemin="0" aria-valuemax="100" style="width: 10%;">
+                      aria-valuemin="0" aria-valuemax="100" style="width: ${json.bagofwords}%;">
                         <span class="sr-only">60%</span>
                       </div>
                     </div>
@@ -92,21 +92,6 @@ function evaluate_essay() {
   </div>
 </div>
                     `;
-
-                show_form_response = `
-<div class="modal fade " id="result-lg" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-
-        <div class='text-center alert ${json.alert}'>
-            <div class="content">
-                <strong><font size="12px">Submitted</font></strong>
-            </div>
-        </div>
-
-    </div>
-</div>
-                    `;
-
                 //$('#essay-text').val(''); // remove the value from the input
             }
             $("#show-form-response").html(show_form_response);
