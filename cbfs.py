@@ -31,6 +31,8 @@ class Cbfs(BaseFeatureTransform):
         #may need to calculate the transpose
         self.rff = None
         self.rcf = None
+        self.gvalue = None
+        self.svalue = None
 
     #initiate a matrix of zeros
     def autofn(self):
@@ -148,7 +150,7 @@ class Cbfs(BaseFeatureTransform):
     def parameters_from_essays(self):
         super(Cbfs, self).parameters_from_essays()
         self.autofn()
-        
+        '''
         t = time.time()
         print('freq start')
         self.freq_vector()
@@ -160,7 +162,7 @@ class Cbfs(BaseFeatureTransform):
         self.ft_reduce(50)
         print("length of reduced bagofwords", len(self.bagofwords))
         print(time.time() - t)
-        input()
+        '''
 
     def word_count(self, essay):
         lines = nltk.sent_tokenize(essay)
@@ -190,11 +192,12 @@ class Cbfs(BaseFeatureTransform):
         wrong_count = 0
         total_word = 1
         for line in refined_essay.splitlines():
-            for word in line:
+            for word in line.split(' '):
                 total_word += 1
                 if not self.cspell.check(word, correct=False):
                     wrong_count += 1
-        return wrong_count*1.0/total_word
+        self.svalue = wrong_count*1.0/total_word
+        return self.svalue
 
 
     def GetNgram(self, essay, nval):
@@ -215,9 +218,12 @@ class Cbfs(BaseFeatureTransform):
         for each in essay_ngram:
             miss += 1 - self.trie.Search(each)
         if(len(essay_ngram)):
-            return miss*1.0/len(essay_ngram)
+            self.gvalue = miss*1.0/len(essay_ngram)
+            return self.gvalue
+
         else:
-            return 0
+            self.gvalue = 0
+            return self.gvalue
 
     def getTransformed(self, essays, corr = False):
         v = super(Cbfs, self).getTransformed(essays, corr)
