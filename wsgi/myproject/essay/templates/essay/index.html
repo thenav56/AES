@@ -20,7 +20,9 @@
         {% block body %}
         <div class="container">
                     <h3 class="">Essay {% if search %}Search {% endif %}List
+                        {% if request.user.is_authenticated %}
                         <span class="pull-right"><a class="btn btn-sm {{btn_primary}}" href="register">Register</a></span>
+                        {% endif %}
                     </h3>
             <legend></legend>
             <div class="row">

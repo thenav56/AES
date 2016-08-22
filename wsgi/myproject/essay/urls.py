@@ -14,6 +14,7 @@ urlpatterns = [
         views.essay_original_submit, name='update_submitted_essay_score'),
     url(r'^evalute_essay_text',
         views.evalute_essay_text, name='evalute_essay_text'),
+    url(r'^pull_mark', views.pull_mark, name='pull_mark'),
     url(r'^$', views.index, name='index'),
     # url(r'^api/', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls')),

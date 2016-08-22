@@ -22,6 +22,7 @@ class EssayModel(models.Model):
             ('1', 'yes')
             )
     name = models.CharField(max_length=200, unique=True)
+    user = models.ForeignKey(User, related_name='essayModels', null=True)
     info = models.CharField(max_length=400)
     created = models.DateTimeField(auto_now_add=True)
     train_file = models.FileField(upload_to=get_File_Name)
@@ -92,6 +93,7 @@ class CronJob(models.Model):
                                       related_name='cronjob')
     status = models.CharField(max_length=1, choices=CRONSTATUS, default='0')
     updated = models.DateTimeField(auto_now=True)
+    train_time = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return str(self.id)+': CornJob('\
@@ -126,8 +128,10 @@ class CronJob(models.Model):
         train_len = int(essaymodel.train_len)  # training set size
         train_essay = essay[:train_len]
         train_score = score[:train_len]
-        test_essay = essay[train_len:]
-        test_score = score[train_len:]
+        test_essay = essay[:train_len]
+        test_score = score[:train_len]
+        # test_essay = essay[train_len:]
+        # test_score = score[train_len:]
         mins = min(score)
         maxs = max(score)
         # from model import load_from_file
@@ -148,7 +152,7 @@ class CronJob(models.Model):
         model.score(test_essay, test_score)
         if not os.path.exists(model_directory+'/'+model_name):
             os.makedirs(model_directory+'/'+model_name)
-        # model.dump(model_directory+'/'+model_name+'/'+essaymodel.name.lower())
+        model.dump(model_directory+'/'+model_name+'/'+essaymodel.name.lower())
         print("Model dumped\n")
         # Evaluation of Model
         from grammar.evaluate import Evaluate
@@ -205,15 +209,26 @@ def post_generate_model(sender, **kwargs):
 
 
 class Essay(models.Model):
-    user = models.ForeignKey(User, related_name='essays')
+    evalute_status = (
+            ('0', 'no'),
+            ('1', 'yes')
+            )
+    user = models.ForeignKey(User, related_name='essays', null=True)
     essaymodel = models.ForeignKey(EssayModel, related_name='essays')
     text = models.CharField(max_length=3000)
-    predicted_mark = models.IntegerField()
+    predicted_mark = models.IntegerField(blank=True, null=True)
     original_mark = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    evalute_status = models.CharField(max_length=1, choices=evalute_status,
+                                              default='0', blank=True)
+    evalute_duration = models.DurationField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
+    grammar = models.IntegerField(blank=True, null=True)
+    spell = models.IntegerField(blank=True, null=True)
+
 
     class Meta:
-        unique_together = (('user', 'essaymodel', 'text'))
+        # unique_together = (('user', 'essaymodel', 'text'))
         ordering = ['-created_at']
 
     def __str__(self):

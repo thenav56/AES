@@ -51,19 +51,28 @@ function render_histogram(div_id, resp_data){
 };
 
 function render_roc(div_id, resp_data){
+    classes = [] ; 
+    index = 1 ;
+    for(i=2; i< 13; i++){
+        index += 1 ;
+        classes.push('Class: '+index)
+    };
+
     var trace1 = {
       x: [0, 1],
       y: [0, 1],
       name: 'Good',
       type: 'scatter'
     };
-    resp_data.original_x.push(1)
-    resp_data.original_y.push(1)
+    resp_data.original_x.push(0.8)
+    resp_data.original_y.push(0.9)
     var trace2 = {
       x: resp_data.original_x,
       y: resp_data.original_y,
       name: 'ROC Curve',
-      type: 'scatter'
+      type: 'scatter',
+      mode: 'markers',
+      text: classes
     };
     var data = [trace1, trace2];
     var layout = {

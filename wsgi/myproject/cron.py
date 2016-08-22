@@ -25,9 +25,12 @@ def train_scheduled_job(on_openshift):
             cronjob.train()
             end_t = time.time()
             end_time = datetime.datetime.now()
+            total_time = end_time - start_time
             print("Total Time To Train: ", (end_t-start_t))
             print("Started At :", start_time)
             print("AND Ended At :", end_time)
+            cronjob.train_time = total_time
+            cronjob.save()
             return True
     except IndexError:
         print("Empty queue")
@@ -43,6 +46,7 @@ if __name__ == "__main__":
     if not on_openshift:
         while 1:
             if not train_scheduled_job(on_openshift):
+                exit()
                 time.sleep(5*60)
     else:
         try:

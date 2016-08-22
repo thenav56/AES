@@ -1,3 +1,4 @@
+{% load timedelta %}
 <div class="panel {{panel_default}}">
     <div class="panel-heading" role="tab" id="headingOne">
         <h4 class="panel-title">
@@ -13,20 +14,24 @@
           </thead>
           <tbody>
               <tr>
-                <td>Essay Model Created Date</td>
+                <td>Created Date</td>
                 <td> {{ essayModel.created }}</td>
               </tr>
               <tr>
-                <td>Essay Model Info </td>
+                <td>Info </td>
                 <td>{{ essayModel.info }}</td>
               </tr>
               <tr>
-                <td>Essay Model Train Length </td>
+                <td>Train Length </td>
                 <td>{{ essayModel.train_len }}</td>
               </tr>
               <tr>
-                <td>Essay Model Train Status </td>
+                <td>Train Status </td>
                 <td>{{ essayModel.cronjob.get_status_display }}</td>
+              </tr>
+              <tr>
+                <td>Train Duration </td>
+                <td>{{ essayModel.cronjob.train_time|timeDelta }}</td>
               </tr>
           </tbody>
         </table>

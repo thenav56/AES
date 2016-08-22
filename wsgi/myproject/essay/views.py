@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import Q
+from .templatetags.timedelta import timeDelta
 import json
 
 from .models import EssayModel, CronJob, Essay
@@ -59,13 +61,19 @@ def register(request):
         info = request.POST.get('info')
         train_file = request.FILES['train_file']
         train_len = request.POST.get('train_len')
-        essayModel = EssayModel(name=name, info=info,
-                                train_file=train_file, train_len=train_len)
-        essayModel.save()
         context = {
-                'flash': True,
-                'success': True
+                    'flash': True,
+                    'success': False
                 }
+        if request.user.is_authenticated():
+            essayModel = EssayModel(name=name, info=info,
+                                    train_file=train_file, train_len=train_len,
+                                    user=request.user)
+            essayModel.save()
+            context = {
+                    'flash': True,
+                    'success': True
+                    }
         # context = {
                 # 'flash': True,
                 # 'success': False
@@ -105,7 +113,8 @@ def view(request, essayModel_id):
                     previous_user_essay = paginator.page(paginator.num_pages)
 
                 if request.user.is_superuser:
-                    paginator = Paginator(essayModel.essays.all(), 3)
+                    paginator = Paginator(essayModel.essays.filter(~Q(user=None)),
+                                          3)
                     page = request.GET.get('s_e_page')
 
                     try:
@@ -146,7 +155,10 @@ def evalute_essay_text(request):
         essay_text = request.POST.get('essay_text')
 
         if essayModel.cronjob.get_status_display() == 'finished':
-            t = essayModel.evalute(essay_text)
+            import time
+            # start_time = time.time()
+            # t = essayModel.evalute(essay_text)
+            # process_time = time.time() - start_time
         else:
             context = { 'error': 'Model status is not finished, Try Again\
                     Later', 'error_code': '503' }
@@ -159,29 +171,71 @@ def evalute_essay_text(request):
                                                   essaymodel=essayModel).first()
                 if essay_submit is None:
                     essay_submit = Essay(user=request.user, essaymodel=essayModel,
-                                         predicted_mark=t, text=essay_text)
+                                         text=essay_text)
                 else:
                     essay_submit.text = essay_text
+                    essay_submit.evalute_status = '0'
                 essay_submit.save()
             except IntegrityError as e:
                 pass
+        else:
+            essay_submit = Essay(essaymodel=essayModel,
+                                 text=essay_text)
+            essay_submit.save()
+            print('-------------')
+            print(essay_submit.pk)
+            print('-------------')
 
-        alert = "alert-success" if t >= 4.8 else "alert-warning"
-        scored_message = 'Nice Work <span class="glyphicon\
-                         glyphicon-thumbs-up"></span>' \
-                         if t >= 4.8 else "Need More Effort"
+        # alert = "alert-success" if t >= 4.8 else "alert-warning"
+        # scored_message = 'Nice Work <span class="glyphicon\
+                         # glyphicon-thumbs-up"></span>' \
+                         # if t >= 4.8 else "Need More Effort"
+        # context = {
+                    # 'marks_scored': t,
+                    # 'alert': alert,
+                    # 'scored_message': scored_message,
+                    # 'grammer' : 100*(t/(12)),
+                    # 'cspell' : 100*(12/(8*t)),
+                    # 'bagofwords' : 100*(t/(1.3*12)),
+                    # 'processTime': process_time
+                # }
         context = {
-                    'marks_scored': t,
-                    'alert': alert,
-                    'scored_message': scored_message,
-                    'grammer' : 100*(t/(12)),
-                    'cspell' : 100*(12/(8*t)),
-                    'bagofwords' : 100*(t/(1.3*12))
+                'essayID': essay_submit.pk
                 }
 
         return HttpResponse(json.dumps(context),
                             content_type="application/json"
                         )
+
+
+
+def pull_mark(request):
+    context = {
+                'error': 'undefined'
+                }
+    if request.method == 'POST':
+        essayID = request.POST.get('essayID')
+        essay = Essay.objects.get(pk=essayID)
+        context = {
+                'error': 'still processing'
+                }
+        if essay.evalute_status == '1':
+            t = essay.predicted_mark
+            alert = "alert-success" if t >= 4.8 else "alert-warning"
+            scored_message = 'Nice Work <span class="glyphicon\
+                             glyphicon-thumbs-up"></span>' \
+                             if t >= 4.8 else "Need More Effort"
+            context = {
+                        'marks_scored': t,
+                        'alert': alert,
+                        'scored_message': scored_message,
+                        'grammar' : essay.grammar,
+                        'cspell' : essay.spell,
+                        'processTime': timeDelta(essay.evalute_duration)
+                    }
+    return HttpResponse(json.dumps(context),
+                        content_type="application/json")
+
 
 def essay_original_submit(request):
     response = 'Invalid Request'

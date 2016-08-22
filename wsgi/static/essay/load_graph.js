@@ -40,7 +40,7 @@ function load_graph(div_id, graph_name) {
 $(document).ready(function() {
     load_graph("graph_1", 'HISTOGRAM');
     load_graph("graph_2", 'ROC');
-    load_graph("graph_3", 'SCATTER');
+    //load_graph("graph_3", 'SCATTER');
     load_graph("graph_4", 'HISTOGRAM-casestudy');
     load_graph("graph_5", 'CONFUSION');
 });
