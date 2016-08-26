@@ -16,7 +16,7 @@ def main():
     data = list(zip(*data))
     essay = data[2][1:]
     score = data[6][1:]
-    train_len = 500
+    train_len = 1200
     train_essay = essay[:train_len]
     train_score = score[:train_len]
     test_essay = essay[train_len:]
@@ -28,17 +28,21 @@ def main():
     if load:
         model = load_from_file('c2.model')
     else:
-        sk = True
+        sk = False
         if sk:
             from sklearn import svm
             mod = svm.SVC(kernel = 'linear', decision_function_shape='ovo')
         else:
             import msvm
             mod = msvm.MSVM()
-        #feature = BaseFeatureTransform()
-        feature = Cbfs()
+        feature = BaseFeatureTransform()
+        #feature = Cbfs()
         model = EssayModel(mod, feature)
+        s = time.time()
+        print('training')
         model.train(train_essay, train_score, mins, maxs)
+        print('total time', time.time() - s)
+        input('ok..')
         model.score(test_essay, test_score)
         #model.dump('c2.model')
         #print("Model dumped\n")

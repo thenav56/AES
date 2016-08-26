@@ -61,7 +61,7 @@ def main():
             essay_list.append([name, core])
     for i in essay_list:
         print(i)
-    model = load_from_file('pinnacle.model')
+    model = load_from_file('twelve.model')
     for i in essay_list:
         print(i[0], 'scores', model.predict([i[1]]))
         input('...')
